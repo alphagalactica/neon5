@@ -46,6 +46,11 @@ ihr Name leuchtet kurz auf.
 
 - Unten ein Element wählen (oder Tasten `1`–`5`), dann den Planeten berühren.
 - Erde sät sich mit der Zeit selbst weiter; erst mit Liebe blüht die Welt.
+- Orbit-Tempo links oben (Taste `O`): **Stille · Gleiten · Flug** — vom stillen
+  Schweben bis zum Satellitenflug über deine Welt, mit sanftem Beschleunigen.
+- Das Universum lebt mit: je mehr Geschöpfe, desto mehr Sterne erwachen,
+  Milchstraße und ferne Galaxien werden klarer — und bei jeder gespielten Note
+  antwortet irgendwo ein Stern.
 - `M` Ton · `G` Glow/pur · `i` Vernissage-Seite · `×`/`C` die Welt sanft loslassen.
 - Die Welt wird lokal im Browser gespeichert und wartet beim nächsten Besuch —
   die nächste Session spielt sie neu.
