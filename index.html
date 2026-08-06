@@ -6,8 +6,8 @@
 <title>NEON5 — Die fünf Elemente</title>
 <style>
   html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}
-  #stage{position:fixed;inset:0;display:block;touch-action:none;cursor:pointer}
-  #intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  #stage{position:fixed;top:0;left:0;right:0;bottom:0;display:block;touch-action:none;cursor:pointer}
+  #intro{position:fixed;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;
     background:rgba(0,0,0,.62);z-index:10;transition:opacity 1.2s ease;user-select:none;-webkit-user-select:none;
     touch-action:none;cursor:pointer;font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;color:#cfd6da;
     overflow:auto}
@@ -176,6 +176,10 @@ const AU = {
       const dl = c.createDelay(1); dl.delayTime.value = this.stepDur * 3;
       const fb = c.createGain(); fb.gain.value = .28; const mix = c.createGain(); mix.gain.value = .38;
       this.chimeBus.connect(dl); dl.connect(fb).connect(dl); dl.connect(mix).connect(comp);
+      // Ein gemeinsamer Rausch-Puffer für alle Wind-/Feuer-Stimmen (statt Buffer-Churn pro Note)
+      this.nbuf = c.createBuffer(1, c.sampleRate * 3, c.sampleRate);
+      const nd = this.nbuf.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
       this.loopStart = c.currentTime + .2; this.nextStep = 0;
       this.timer = setInterval(() => this.tick(), 110);
     } catch (err) { /* Ton ist optional */ }
@@ -227,23 +231,20 @@ const AU = {
   },
   noiseAt(f, q, g, att, tau, t0, dest) {
     const c = this.ctx;
-    const nb = c.createBuffer(1, c.sampleRate, c.sampleRate); const d = nb.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    const src = c.createBufferSource(); src.buffer = nb;
+    const src = c.createBufferSource(); src.buffer = this.nbuf;
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
     const gn = c.createGain(); gn.gain.value = 0;
     src.connect(bp).connect(gn).connect(dest);
     gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(g, t0 + att); gn.gain.setTargetAtTime(0, t0 + att, tau);
-    src.start(t0); src.stop(t0 + att + tau * 6);
+    src.start(t0, Math.random() * 1.2, att + tau * 6 + .1); src.stop(t0 + att + tau * 6);
   },
   voice(e, t0, pan) { // die Stimme einer Schöpfung — Tonhöhe aus ihrer Variante
     const deg = (e.v * 7 + (e.seed >>> 8)) % 5;
     const warm = 1 + .3 * S.harmony;
-    const dest = this.out(pan);
-    if (e.kind === 'erde') { const f = this.degFreq(deg, e.v % 2); this.note(f, 'triangle', .05 * warm, .008, .3, t0, dest); this.note(f * 2, 'sine', .02, .008, .2, t0, dest); }
+    if (e.kind === 'erde') { const dest = this.out(pan); const f = this.degFreq(deg, e.v % 2); this.note(f, 'triangle', .05 * warm, .008, .3, t0, dest); this.note(f * 2, 'sine', .02, .008, .2, t0, dest); }
     else if (e.kind === 'wasser') { const f = this.degFreq(deg, 1 + (e.v % 2)); this.note(f, 'sine', .04 * warm, .01, 1.2, t0, this.chimeBus); this.note(f * 3, 'sine', .012, .01, .8, t0, this.chimeBus); }
-    else if (e.kind === 'feuer') { this.note(this.chordRoot() / 2, 'sine', .07, .012, .28, t0, dest); this.noiseAt(300, .8, .012, .02, .12, t0, dest); }
-    else if (e.kind === 'wind') { this.noiseAt(420 + e.alt * 3, .7, .02, .5, 1, t0, dest); }
+    else if (e.kind === 'feuer') { const dest = this.out(pan); this.note(this.chordRoot() / 2, 'sine', .07, .012, .28, t0, dest); this.noiseAt(300, .8, .012, .02, .12, t0, dest); }
+    else if (e.kind === 'wind') { this.noiseAt(420 + e.alt * 3, .7, .02, .5, 1, t0, this.out(pan)); }
     else if (e.kind === 'liebe') { const f1 = this.degFreq(deg, 1), f2 = this.degFreq(deg + 2, 1); this.note(f1, 'sine', .035 * warm, .18, 1.6, t0, this.chimeBus); this.note(f2, 'sine', .03 * warm, .22, 1.6, t0, this.chimeBus); }
   },
   spawn(kind, e) { // Erschaffungsklang — aufs nächste 16tel gerastert, damit nichts stolpert
@@ -259,7 +260,7 @@ const AU = {
     else if (kind === 'liebe') { this.note(this.degFreq(deg, 1), 'sine', .038, .12, 1.3, t0, this.chimeBus); this.note(this.degFreq(deg + 2, 1), 'sine', .032, .16, 1.3, t0, this.chimeBus); }
   },
   toggle() { this.on = !this.on; if (!this.ctx && this.on) this.init(); if (this.ctx) this.master.gain.setTargetAtTime(this.on ? CFG.volume : 0, this.ctx.currentTime, .2); this.resume(); },
-  resume() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {}); },
+  resume() { if (this.ctx && (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted')) this.ctx.resume().catch(() => {}); },
   suspend() { if (this.ctx && this.ctx.state === 'running') this.ctx.suspend().catch(() => {}); },
 };
 
@@ -436,7 +437,8 @@ function drawTaktlicht() { // das umlaufende Licht der Spieluhr
 function entAlpha(e) {
   const inA = sm(clamp((S.worldT - e.born) / 2, 0, 1));
   const base = e.dying ? inA * clamp(1 - (S.worldT - e.dying) / 6, 0, 1) : inA;
-  const g = clamp(1 - (S.worldT - e.glintT) / .8, 0, 1); // Aufleuchten, wenn das Taktlicht die Stimme spielt
+  const dtg = S.worldT - e.glintT; // Aufleuchten erst, WENN das Taktlicht die Stimme spielt — nicht davor
+  const g = dtg >= 0 ? clamp(1 - dtg / .8, 0, 1) : 0;
   return base * (1 + .3 * sm(g));
 }
 function visible(phi) { const [x, y] = spos(phi); return x > -170 && x < W + 170 && y < H + 90; }
@@ -476,12 +478,12 @@ function drawErde(e) {
   const f = e.V.f, sc = e.sc;
   if (f === 'baum') {
     for (let i = 0; i < 6; i++) blade((hash(e.seed + i * 7) - .5) * 44 * sc, (8 + hash(e.seed + i * 13) * 12) * sc, 0, i + e.ph, e.C[1], .3 * al);
-    drawTreeNode(e.tree, 0, 0, -Math.PI / 2, 0, H * .15 * sc * clamp(P.len ?? 1, .5, 1.5), e, CFG.grow / 5, clamp(Math.round(P.depth || 5), 3, 6));
+    drawTreeNode(e.tree, 0, 0, -Math.PI / 2, 0, H * .15 * sc * clamp(P.len ?? 1, .5, 1.2), e, CFG.grow / 5, clamp(Math.round(P.depth || 5), 3, 6));
   } else if (f === 'gras') {
     const n = clamp(Math.round(P.blades || 14), 4, 28);
     for (let i = 0; i < n; i++) {
       const g = sm(clamp((grow * n - i * .6) / 3, 0, 1)); if (g <= 0) continue;
-      blade((hash(e.seed + i * 7) - .5) * 90 * sc, (30 + hash(e.seed + i * 13) * 46) * clamp(P.height ?? 1, .4, 1.8) * sc * g, P.lean ?? 0, i * .7 + e.ph, mixc(e.C[0], e.C[1], hash(e.seed + i)), .34 * al);
+      blade((hash(e.seed + i * 7) - .5) * 90 * sc, (30 + hash(e.seed + i * 13) * 46) * clamp(P.height ?? 1, .4, 1.8) * sc * g, P.lean ?? 0, i * .7 + e.ph, mixc(e.C[0], e.C[1], hash(e.seed + i)), .45 * al);
       if (i % 4 === 0) dot((hash(e.seed + i * 7) - .5) * 90 * sc, -(30 + hash(e.seed + i * 13) * 46) * clamp(P.height ?? 1, .4, 1.8) * sc * g, e.C[2], .35 * al * g, 2.5);
     }
   } else if (f === 'blume') {
@@ -499,7 +501,7 @@ function drawErde(e) {
         const c1 = mixc(e.C[1], e.C[2], i % 2 ? .7 : .2);
         if ((P.pstyle | 0) === 0) neon(line(hx + Math.cos(an) * hr * .45, hy + Math.sin(an) * hr * .45, hx + Math.cos(an) * hr, hy + Math.sin(an) * hr), c1, .55 * al, 0, 4);
         else if ((P.pstyle | 0) === 1) { const pp = new Path2D(); pp.ellipse(hx + Math.cos(an) * hr * .62, hy + Math.sin(an) * hr * .62, hr * .42, hr * .17, an, 0, Math.PI * 2); neon(pp, c1, .45 * al, 0, 4); }
-        else dot(hx + Math.cos(an) * hr, hy + Math.sin(an) * hr, c1, .55 * al, 2.5);
+        else dot(hx + Math.cos(an) * hr, hy + Math.sin(an) * hr, c1, .8 * al, 3.4);
       }
       dot(hx, hy, e.C[2], .7 * al * open, 3.5);
     }
@@ -609,12 +611,13 @@ function drawFeuer(e) {
     neon(p, mixc(e.C[0], e.C[1], fl > 1 ? k / (fl - 1) : .5), .5 * al, k === ((fl / 2) | 0) ? .5 : 0, 5);
   }
   if (f === 'irrlicht') { ctx.fillStyle = col(e.C[1], .12 * al); ctx.fillRect(-10, y0 - 16, 20, 22); }
-  if (f === 'glut') {
-    for (let k = 0; k < 7; k++) {
-      const gx = (hash(e.seed + k * 3) - .5) * 30, gy = -2 - hash(e.seed + k * 7) * 8;
-      const puls = .22 + .22 * (0.5 + 0.5 * Math.sin(S.worldT * (.1 + hash(e.seed + k) * .1) * RM + k * 2.2));
-      dot(gx, gy, mixc(e.C[0], e.C[1], hash(e.seed + k * 11)), puls * al * 2, 3);
+  if (f === 'glut' || fl === 0) { // Glutnest: auch Funken-Quellen brauchen eine sichtbare Herkunft
+    for (let k = 0; k < 9; k++) {
+      const gx = (hash(e.seed + k * 3) - .5) * 30, gy = -2 - hash(e.seed + k * 7) * 9;
+      const puls = .3 + .25 * (0.5 + 0.5 * Math.sin(S.worldT * (.1 + hash(e.seed + k) * .1) * RM + k * 2.2));
+      dot(gx, gy, mixc(e.C[0], e.C[1], hash(e.seed + k * 11)), Math.min(1, puls * al * 2), 3.5);
     }
+    ctx.fillStyle = col(e.C[0], .1 * al); ctx.fillRect(-16, -13, 32, 15);
   }
   const epat = P.epat | 0;
   for (const p of e.parts) {
@@ -624,7 +627,7 @@ function drawFeuer(e) {
     else if (epat === 2) ex = p.u + Math.sin(p.t * .6 + p.ph) * 9;
     else ex = p.u + Math.sin(p.t * .8 + p.ph) * 5;
     const gold = mixc(e.C[1], PAL.liebe[1], S.harmony * .5);
-    dot(ex, ey, mixc(e.C[0], gold, p.t / p.life), .6 * fade * al, 2.8);
+    dot(ex, ey, mixc(e.C[0], gold, p.t / p.life), .72 * fade * al, 3.4);
   }
   ctx.restore();
 }
@@ -649,11 +652,20 @@ function drawWasser(e) {
       neon(p, e.C[0], .55 * fal * al, .3, 5);
     }
   }
-  if (P.period > 0 && (age % P.period) < 1.6) { // Geysirsäule
-    const u = (age % P.period) / 1.6, hgt = clamp(P.dvy ?? 50, 20, 80) * Math.sin(u * Math.PI);
-    const p = new Path2D(); p.moveTo(0, 0);
-    for (let j = 1; j <= 6; j++) p.lineTo(Math.sin(j * 1.1 + S.worldT * 2) * 2.5, -hgt * j / 6);
-    neon(p, e.C[1], .5 * al * Math.sin(u * Math.PI), .4, 5);
+  if (P.period > 0) { // Geysir: sichtbare Öffnung auch zwischen den Ausbrüchen
+    neon(line(-6, -1, -3, -5), e.C[0], .5 * al, .3, 4);
+    neon(line(6, -1, 3, -5), e.C[0], .5 * al, .3, 4);
+    dot(0, -4 - 2 * Math.sin(S.worldT * .3 * RM + e.ph), e.C[1], .5 * al, 3); // es brodelt leise
+    if ((age % P.period) < 1.6) {
+      const u = (age % P.period) / 1.6, hgt = clamp(P.dvy ?? 50, 20, 80) * Math.sin(u * Math.PI);
+      const p = new Path2D(); p.moveTo(0, 0);
+      for (let j = 1; j <= 6; j++) p.lineTo(Math.sin(j * 1.1 + S.worldT * 2) * 2.5, -hgt * j / 6);
+      neon(p, e.C[1], .5 * al * Math.sin(u * Math.PI), .4, 5);
+    }
+  }
+  if (e.V.f === 'teich') { // stehender Uferrand — der Teich ist immer da
+    const p = new Path2D(); p.ellipse(0, -1, pool * .9, pool * .24, 0, 0, Math.PI * 2);
+    neon(p, e.C[0], .3 * al, .2, 5);
   }
   for (const p of e.drops) {
     const fade = clamp(1 - p.t / 2.2, 0, 1);
@@ -675,15 +687,15 @@ function drawWindEnt(e) {
       const phd = e.ph + k * Math.PI * 2 / e.n + S.worldT * e.spd * RM;
       if (!visible(phd)) continue;
       const rr = R + e.alt + Math.sin(S.worldT * .18 * RM + k * 1.3 + e.ph) * amp;
-      const pts = [], segs = f === 'feder' ? 7 : 3, dphi = (f === 'feder' ? .012 : .02) * len;
+      const pts = [], segs = f === 'feder' ? 7 : 4, dphi = (f === 'feder' ? .012 : .018) * len;
       for (let j = 0; j <= segs; j++) {
         const pj = phd + j * dphi;
-        const wob = f === 'feder' ? Math.sin(j * .9 + S.worldT * .4 * RM + k) * amp * .35 : 0;
+        const wob = Math.sin(j * .9 + S.worldT * (f === 'feder' ? .4 : .3) * RM + k) * amp * (f === 'feder' ? .35 : .22);
         pts.push([CX + (rr + wob) * Math.cos(pj), CY + (rr + wob) * Math.sin(pj)]);
       }
-      const cyc = f === 'feder' ? .25 + .75 * (0.5 + 0.5 * Math.sin(S.worldT * .1 * RM + k * 2.3)) : 1;
-      neon(poly(pts), e.C[0], .26 * al * cyc, 0, 5);
-      dot(pts[segs][0], pts[segs][1], e.C[1], .4 * al * cyc, 2.5);
+      const cyc = f === 'feder' ? .35 + .65 * (0.5 + 0.5 * Math.sin(S.worldT * .1 * RM + k * 2.3)) : 1;
+      neon(poly(pts), e.C[0], .45 * al * cyc, .5, 6);
+      dot(pts[segs][0], pts[segs][1], e.C[1], .6 * al * cyc, 2.8);
     }
     return;
   }
@@ -693,33 +705,34 @@ function drawWindEnt(e) {
     const [cx0, cy0] = spos(phi, alt);
     const rot = S.worldT * e.spd * 9 * RM + e.ph, turns = clamp(Math.round(P.turns || 2), 1, 3);
     const pts = [];
-    for (let th = 0; th < turns * Math.PI * 2; th += .3) {
-      const rr = 2.5 + th / (turns * Math.PI * 2) * amp * 1.7;
+    const ampw = Math.max(5, amp);
+    for (let th = 0; th < turns * Math.PI * 2; th += .25) {
+      const rr = 4 + th / (turns * Math.PI * 2) * ampw * 3.2;
       pts.push([cx0 + Math.cos(th + rot) * rr, cy0 + Math.sin(th + rot) * rr * .8]);
     }
-    neon(poly(pts), e.C[0], .32 * al, .2, 5);
-    dot(cx0, cy0, e.C[1], .4 * al, 2);
+    neon(poly(pts), e.C[0], .5 * al, .5, 6);
+    dot(cx0, cy0, e.C[1], .6 * al, 2.5);
   } else if (f === 'fahne') {
     const [bx, by] = spos(phi, alt);
     const tang = phi + Math.PI / 2;
-    const pts = [], n = 11, flen = 44 * len;
+    const pts = [], n = 11, flen = 58 * len;
     for (let j = 0; j <= n; j++) {
       const d = j / n * flen;
       const wob = Math.sin(j * .7 - S.worldT * e.spd * 26 * RM + e.ph) * amp * (j / n);
       pts.push([bx + Math.cos(tang) * d + Math.cos(phi) * wob, by + Math.sin(tang) * d + Math.sin(phi) * wob]);
     }
-    neon(line(bx, by, bx + Math.cos(phi) * 10, by + Math.sin(phi) * 10), e.C[1], .3 * al, 0, 4);
-    neon(poly(pts), e.C[0], .34 * al, .2, 5);
+    neon(line(bx, by, bx + Math.cos(phi) * 10, by + Math.sin(phi) * 10), e.C[1], .45 * al, 0, 4);
+    neon(poly(pts), e.C[0], .5 * al, .5, 6);
   } else if (f === 'schleier') {
     for (let s2 = 0; s2 < 3; s2++) {
-      const rr = R + alt + s2 * 9;
+      const rr = R + alt + s2 * 10;
       const pts = [];
       for (let j = -6; j <= 6; j++) {
-        const pj = phi + j * .01 * len;
+        const pj = phi + j * .012 * len;
         const wob = Math.sin(j * .8 + S.worldT * .25 * RM + e.ph + s2) * amp * .5;
         pts.push([CX + (rr + wob) * Math.cos(pj), CY + (rr + wob) * Math.sin(pj)]);
       }
-      neon(poly(pts), mixc(e.C[0], e.C[1], s2 / 2), .15 * al, 0, 5);
+      neon(poly(pts), mixc(e.C[0], e.C[1], s2 / 2), .28 * al, s2 === 1 ? .4 : 0, 6);
     }
   }
 }
@@ -743,26 +756,26 @@ function drawLove(e) {
   const [phiM, alt] = lovePos(e);
   if (!visible(phiM)) return;
   const [x, y] = spos(phiM, alt);
-  const size = clamp(P.size ?? 5, 2.5, 7);
-  const pulse = .8 + .2 * Math.sin(S.worldT * clamp(P.pulse ?? .14, .05, .25) * 6.3 * RM + e.ph);
-  ctx.fillStyle = col(e.C[0], .16 * al * pulse); ctx.fillRect(x - 7, y - 7, 14, 14);
-  if (f === 'komet') for (let k = 1; k <= 5; k++) {
+  const size = clamp(P.size ?? 5, 2.5, 7) * 1.6;
+  const pulse = .82 + .18 * Math.sin(S.worldT * clamp(P.pulse ?? .14, .05, .25) * 6.3 * RM + e.ph);
+  ctx.fillStyle = col(e.C[0], .2 * al * pulse); ctx.fillRect(x - 10, y - 10, 20, 20);
+  if (f === 'komet') for (let k = 1; k <= 6; k++) {
     const [pk, ak] = lovePos(e, k * .5), [tx2, ty2] = spos(pk, ak);
-    dot(tx2, ty2, e.C[0], .3 * al * (1 - k / 6), 2.5);
+    dot(tx2, ty2, e.C[0], .4 * al * (1 - k / 7), 3);
   }
-  if (f === 'herz') neon(heartPath(x, y, size * 1.4), e.C[0], .8 * al * pulse, .7, 5);
-  else if (f === 'ring') { neon(circle(x, y, size + 2.5), e.C[0], .7 * al * pulse, .6, 5); dot(x, y, e.C[1], .8 * al * pulse, 2.5); }
+  if (f === 'herz') neon(heartPath(x, y, size * 1.5), e.C[0], .85 * al * pulse, .7, 6);
+  else if (f === 'ring') { neon(circle(x, y, size + 4), e.C[0], .8 * al * pulse, .6, 6); dot(x, y, e.C[1], .85 * al * pulse, 3); }
   else if (f === 'doppel') {
     const orb = S.worldT * .5 * RM + e.ph;
-    for (const sgn of [1, -1]) dot(x + Math.cos(orb) * 7 * sgn, y + Math.sin(orb) * 5 * sgn, sgn > 0 ? e.C[0] : e.C[1], .85 * al * pulse, size * .8);
+    for (const sgn of [1, -1]) dot(x + Math.cos(orb) * 9 * sgn, y + Math.sin(orb) * 6.5 * sgn, sgn > 0 ? e.C[0] : e.C[1], .9 * al * pulse, size * .85);
   } else if (f === 'bluete') {
-    for (let k = 0; k < 7; k++) { const an = k / 7 * Math.PI * 2 + S.worldT * .05 * RM; dot(x + Math.cos(an) * (size + 2), y + Math.sin(an) * (size + 2), e.C[0], .6 * al * pulse, 2.5); }
-    dot(x, y, e.C[1], .9 * al * pulse, 3);
+    for (let k = 0; k < 7; k++) { const an = k / 7 * Math.PI * 2 + S.worldT * .05 * RM; dot(x + Math.cos(an) * (size + 3), y + Math.sin(an) * (size + 3), e.C[0], .7 * al * pulse, 3); }
+    dot(x, y, e.C[1], .95 * al * pulse, 3.5);
   } else dot(x, y, e.C[0], .95 * al * pulse, size);
   const rays = clamp(Math.round(P.rays ?? 4), 0, 8);
   for (let k = 0; k < rays; k++) {
     const an = k / rays * Math.PI * 2 + (f === 'stern' ? 0 : .4);
-    neon(line(x + Math.cos(an) * (size + 1), y + Math.sin(an) * (size + 1), x + Math.cos(an) * (size + 5.5), y + Math.sin(an) * (size + 5.5)), e.C[1], .5 * al * pulse, 0, 4);
+    neon(line(x + Math.cos(an) * (size + 2), y + Math.sin(an) * (size + 2), x + Math.cos(an) * (size + 9), y + Math.sin(an) * (size + 9)), e.C[1], .6 * al * pulse, 0, 4);
   }
   // Fäden — Liebe verbindet
   const reach = clamp(P.reach ?? .6, .2, .9), maxT = clamp(Math.round(P.threads ?? 2), 1, 3), ts = P.tstyle | 0;
@@ -902,10 +915,11 @@ window.NF = {
   warp(sec) { const st = .033; for (let k = 0; k < sec / st; k++) update(st); },
   gallery(k, page = 0, per = 8) {
     S.ents = []; S.labels = [];
+    S.sel = ELEMENTS.findIndex(x => x.k === k);
     const lib = VAR[k], i0 = page * per, i1 = Math.min(lib.length, i0 + per);
     for (let i = i0; i < i1; i++) {
       const j = i - i0, cnt = i1 - i0;
-      const off = (cnt > 1 ? (j / (cnt - 1) - .5) : 0) * ARC * 1.25;
+      const off = (cnt > 1 ? (j / (cnt - 1) - .5) : 0) * ARC * .95;
       plant(k, -Math.PI / 2 + off - S.om, k === 'wind' ? 34 + (j % 4) * 24 : (k === 'liebe' ? 40 + (j % 3) * 18 : 0), i);
     }
     S.labels = [];
