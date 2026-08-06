@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>NEON5 — Die fünf Elemente</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}
+  #stage{position:fixed;inset:0;display:block;touch-action:none;cursor:pointer}
+  #intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.55);z-index:10;transition:opacity 1.2s ease;user-select:none;-webkit-user-select:none;
+    touch-action:none;cursor:pointer;font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;color:#cfd6da}
+  #intro.hide{opacity:0;pointer-events:none}
+  #intro .box{border:1px solid #ffb9d6;box-shadow:0 0 16px rgba(255,185,214,.35), inset 0 0 22px rgba(255,185,214,.08);
+    background:rgba(0,0,0,.72);padding:26px 34px;max-width:88vw}
+  #intro .t1{color:#fff;font-size:clamp(20px,5vw,34px);letter-spacing:.5em;margin-right:-.5em;white-space:nowrap;
+    text-shadow:0 0 1px #fff,0 0 10px #ffb9d6,0 0 26px #ffb9d6}
+  #intro .t2{color:#9be8ff;font-size:12px;letter-spacing:.28em;margin:10px 0 0;text-shadow:0 0 8px rgba(155,232,255,.5)}
+  #intro .rule{height:1px;background:#ffb9d6;box-shadow:0 0 8px #ffb9d6;margin:16px 0;position:relative}
+  #intro .rule::after{content:'';position:absolute;inset:0;background:#fff;transform:scaleY(.5);opacity:.9}
+  #intro p{margin:0 0 14px;font-size:12px;line-height:1.85;color:#9fb2ba;max-width:46ch}
+  #intro pre{margin:0;font-size:12px;line-height:1.9;color:#9fb2ba;font-family:inherit}
+  #intro pre b{color:#fff;font-weight:normal}
+  #intro .go{margin-top:18px;font-size:12px;letter-spacing:.22em;color:#fff;animation:blink 3s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){#intro .go{animation:none;opacity:.9}}
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<div id="intro"><div class="box">
+  <div class="t1">NEON5</div>
+  <div class="t2">DIE FÜNF ELEMENTE · V0.3</div>
+  <div class="rule"></div>
+  <p>Ein schwarzer Planet in einem dunklen Universum. Erschaffe mit deinem Finger:
+  Erde, Feuer, Wasser, Wind — und Liebe, das fünfte Element, das alles verbindet.
+  Dann schau zu, wie deine Welt ihr eigenes Leben führt.</p>
+  <pre><b>element wählen</b>  unten tippen · Tasten 1–5
+<b>erschaffen</b>      den Planeten berühren
+<b>M</b> ton · <b>G</b> glow · <b>×</b> welt loslassen</pre>
+  <div class="go">TIPPEN ZUM ERSCHAFFEN</div>
+</div></div>
+<script>
+'use strict';
+(() => {
+
+/* ============ KONFIG ============ */
+const CFG = { glow: true, audio: true, volume: 0.45, grow: 12, maxEnts: 44, rot: 0.005 };
+const ELEMENTS = [
+  { k: 'erde',   n: 'ERDE',   c: ['#7FE87F', '#B8FF9B', '#FFD87F'] },
+  { k: 'feuer',  n: 'FEUER',  c: ['#FF6A3D', '#FFB300', '#FFE8A8'] },
+  { k: 'wasser', n: 'WASSER', c: ['#5FC8FF', '#9BE8FF', '#E8F8FF'] },
+  { k: 'wind',   n: 'WIND',   c: ['#D8F0FF', '#9BE8FF', '#FFFFFF'] },
+  { k: 'liebe',  n: 'LIEBE',  c: ['#FFB9D6', '#FFE8F0', '#FFFFFF'] },
+];
+const RIM = '#7F9BFF';
+
+/* ============ CANVAS ============ */
+const cv = document.getElementById('stage');
+const ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1, UI = 1, R = 0, CX = 0, CY = 0, ARC = 1;
+function resize() {
+  W = innerWidth; H = innerHeight;
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  UI = Math.max(.8, Math.min(1.4, Math.min(W, H) / 700));
+  R = Math.max(W, H) * .85; CX = W / 2; CY = H * .64 + R;
+  ARC = Math.asin(Math.min(.999, (W / 2 + 170) / R));
+}
+addEventListener('resize', resize); resize();
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches ? .35 : 1;
+
+/* ============ HELFER ============ */
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const sm = x => { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
+function hash(n) { n = Math.imul(n ^ 0x9E3779B9, 0x85EBCA6B); n ^= n >>> 13; n = Math.imul(n, 0xC2B2AE35); n ^= n >>> 16; return (n >>> 0) / 4294967296; }
+function mulberry(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hex(s) { return [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)]; }
+function mixc(a, b, t) { return [lerp(a[0], b[0], t) | 0, lerp(a[1], b[1], t) | 0, lerp(a[2], b[2], t) | 0]; }
+const col = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const WHITE = [255, 255, 255];
+const PAL = {}; for (const e of ELEMENTS) PAL[e.k] = e.c.map(hex);
+const RIMC = hex(RIM);
+
+// Neon-Strich: 1px Vollton | 1px Weiß | 1px Vollton — plus optionaler weicher Schein
+function neon(path, c, a, core = 1, glowW = 7) {
+  if (a <= 0.012) return;
+  if (CFG.glow && a > 0.06) { ctx.strokeStyle = col(c, a * 0.14); ctx.lineWidth = glowW; ctx.stroke(path); }
+  ctx.strokeStyle = col(c, a); ctx.lineWidth = 3; ctx.stroke(path);
+  if (core > 0.05) { ctx.strokeStyle = col(WHITE, Math.min(1, a * core)); ctx.lineWidth = 1; ctx.stroke(path); }
+}
+function dot(x, y, c, a, s = 3) {
+  if (a <= 0.012) return;
+  ctx.fillStyle = col(c, a); ctx.fillRect(x - s / 2, y - s / 2, s, s);
+  ctx.fillStyle = col(WHITE, a * .9); ctx.fillRect(x - .5, y - .5, 1, 1);
+}
+function line(x1, y1, x2, y2) { const p = new Path2D(); p.moveTo(x1, y1); p.lineTo(x2, y2); return p; }
+function poly(pts, close) { const p = new Path2D(); p.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) p.lineTo(pts[i][0], pts[i][1]); if (close) p.closePath(); return p; }
+function circle(x, y, r) { const p = new Path2D(); p.arc(x, y, Math.max(.1, r), 0, Math.PI * 2); return p; }
+const FONT = px => `${px}px ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace`;
+function txt(str, x, y, px, c, a, align = 'center', spaced = 0) {
+  if (a <= 0.01) return;
+  ctx.font = FONT(px); ctx.textAlign = align; ctx.textBaseline = 'middle';
+  if (spaced) str = str.split('').join(' ');
+  ctx.fillStyle = col(c, a); ctx.fillText(str, x, y);
+}
+const spos = (phi, alt = 0) => [CX + (R + alt) * Math.cos(phi), CY + (R + alt) * Math.sin(phi)];
+const angDiff = (a, b) => { let d = (a - b) % (Math.PI * 2); if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; return d; };
+
+/* ============ ZUSTAND ============ */
+const S = {
+  started: false, sel: 0, om: 0, worldT: 0, harmony: 0,
+  ents: [], saveT: 20, lastPlant: -9,
+  run: 1 + (performance.now() | 0) % 99991,
+};
+
+/* ============ AUDIO ============ */
+const AU = {
+  ctx: null, on: CFG.audio, master: null, comp: null, pad: [], chimeBus: null,
+  root: 110, swayI: 0, nextSway: 0, timer: null, lastSpawn: -9, loveG: null,
+  init() {
+    if (this.ctx) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+      const c = this.ctx = new AC();
+      const comp = this.comp = c.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 5;
+      this.master = c.createGain(); this.master.gain.value = this.on ? CFG.volume : 0;
+      comp.connect(this.master).connect(c.destination);
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 400; lp.Q.value = .6;
+      const padG = c.createGain(); padG.gain.value = 0; lp.connect(padG).connect(comp);
+      padG.gain.linearRampToValueAtTime(0.065, c.currentTime + 8);
+      const lfo = c.createOscillator(); lfo.frequency.value = .04;
+      const lfoG = c.createGain(); lfoG.gain.value = 120; lfo.connect(lfoG).connect(lp.frequency); lfo.start();
+      const mk = (type, mult, g) => { const o = c.createOscillator(); o.type = type; o.frequency.value = this.root * mult; const og = c.createGain(); og.gain.value = g; o.connect(og).connect(lp); o.start(); this.pad.push({ o, mult }); };
+      mk('sawtooth', 1, .26); mk('sawtooth', 1.004, .26); mk('triangle', 1.5, .13); mk('sine', 2, .09);
+      // Liebes-Stimme: große Terz, schwillt mit der Harmonie
+      const lo = c.createOscillator(); lo.type = 'sine'; lo.frequency.value = this.root * 2.5;
+      this.loveG = c.createGain(); this.loveG.gain.value = 0; lo.connect(this.loveG).connect(comp); lo.start();
+      this.chimeBus = c.createGain(); this.chimeBus.gain.value = .55; this.chimeBus.connect(comp);
+      const dl = c.createDelay(1); dl.delayTime.value = .38;
+      const fb = c.createGain(); fb.gain.value = .3; const mix = c.createGain(); mix.gain.value = .4;
+      this.chimeBus.connect(dl); dl.connect(fb).connect(dl); dl.connect(mix).connect(comp);
+      this.nextSway = c.currentTime + 22;
+      this.timer = setInterval(() => this.tick(), 400);
+    } catch (err) { /* Ton ist optional */ }
+  },
+  tick() {
+    const c = this.ctx; if (!c || c.state !== 'running') return;
+    if (c.currentTime > this.nextSway) {
+      this.swayI ^= 1;
+      const root = this.root * (this.swayI ? 8 / 9 : 1);
+      for (const v of this.pad) v.o.frequency.setTargetAtTime(root * v.mult, c.currentTime, 3);
+      this.nextSway = c.currentTime + 22;
+    }
+    this.loveG.gain.setTargetAtTime(S.harmony * .02, c.currentTime, 2);
+  },
+  env(freq, type, g, att, tau, dest) {
+    const c = this.ctx, t = c.currentTime;
+    const gn = c.createGain(); gn.gain.value = 0; gn.connect(dest || this.comp);
+    gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(g, t + att); gn.gain.setTargetAtTime(0, t + att + .02, tau);
+    const o = c.createOscillator(); o.type = type; o.frequency.value = freq; o.connect(gn);
+    o.start(t); o.stop(t + att + tau * 6);
+  },
+  noise(f, q, g, att, tau) {
+    const c = this.ctx, t = c.currentTime;
+    const nb = c.createBuffer(1, c.sampleRate, c.sampleRate); const d = nb.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource(); src.buffer = nb;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+    const gn = c.createGain(); gn.gain.value = 0;
+    src.connect(bp).connect(gn).connect(this.comp);
+    gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(g, t + att); gn.gain.setTargetAtTime(0, t + att, tau);
+    src.start(t); src.stop(t + att + tau * 6);
+  },
+  spawn(kind) { // jedes Element hat seine eigene Stimme — weich, nie hektisch
+    const c = this.ctx; if (!c || !this.on || c.state !== 'running') return;
+    if (c.currentTime - this.lastSpawn < .3) return; this.lastSpawn = c.currentTime;
+    const r = this.root;
+    if (kind === 'erde') { this.env(r * 2 * [1, 1.2, 1.5][(Math.random() * 3) | 0], 'sine', .07, .03, .5); this.env(r, 'triangle', .04, .04, .7); }
+    else if (kind === 'feuer') { this.env(r * .71, 'sine', .09, .012, .3); this.noise(340, .8, .02, .02, .18); }
+    else if (kind === 'wasser') { const f = [523.25, 587.33, 659.25, 783.99][(Math.random() * 4) | 0]; this.env(f, 'sine', .05, .012, 1.3, this.chimeBus); this.env(f * 2.01, 'sine', .015, .012, .9, this.chimeBus); }
+    else if (kind === 'wind') this.noise(760, .6, .028, .4, .9);
+    else if (kind === 'liebe') { this.env(r * 2.5, 'sine', .04, .12, 1.3, this.chimeBus); this.env(r * 3, 'sine', .035, .16, 1.3, this.chimeBus); }
+  },
+  toggle() { this.on = !this.on; if (!this.ctx && this.on) this.init(); if (this.ctx) this.master.gain.setTargetAtTime(this.on ? CFG.volume : 0, this.ctx.currentTime, .2); this.resume(); },
+  resume() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {}); },
+  suspend() { if (this.ctx && this.ctx.state === 'running') this.ctx.suspend().catch(() => {}); },
+};
+
+/* ============ HIMMEL ============ */
+const stars = []; for (let i = 0; i < 150; i++) stars.push({ x: hash(i * 3 + 1), y: hash(i * 3 + 2), ph: hash(i * 3 + 3) * 6.3, sp: .06 + hash(i * 5) * .14, acc: i % 7 === 0 });
+const wisps = [0, 1, 2].map(i => ({ x: hash(i * 11 + 4), y: hash(i * 11 + 5) * .5, r: 120 + hash(i * 11 + 6) * 220, ph: hash(i * 11 + 7) * 6.3, a0: hash(i * 11 + 8) * 6.3 }));
+let shoot = null, shootT = 30;
+
+/* ============ WESEN (Entities) ============ */
+function makeEnt(kind, a, seed, alt = 0, mature = false) {
+  const Rn = mulberry(seed);
+  const e = {
+    kind, a, seed, alt, R: Rn, born: mature ? S.worldT - 60 : S.worldT,
+    ph: Rn() * 6.3, sc: .75 + Rn() * .5, children: 0, dying: 0,
+    parts: [], rings: [], drops: [], pt: 0, rt: 0, dtm: 0,
+  };
+  if (kind === 'erde') e.tree = buildTree(Rn, 5);
+  if (kind === 'wind') { e.spd = (.035 + Rn() * .03) * (Rn() < .5 ? 1 : -1); e.n = 8; }
+  return e;
+}
+function buildTree(Rn, dm) {
+  function build(depth) {
+    const kids = [];
+    if (depth < dm) {
+      const n = depth === 0 ? 2 : (Rn() < .72 ? 2 : Rn() < .5 ? 1 : 3);
+      for (let i = 0; i < n; i++) {
+        const k = build(depth + 1);
+        k.da = (i - (n - 1) / 2) * .62 * (.6 + Rn() * .4) + (Rn() - .5) * .14;
+        kids.push(k);
+      }
+    }
+    return { da: (Rn() - .5) * .2, len: .8 + Rn() * .4, ph: Rn() * 6.3, bl: Rn(), kids };
+  }
+  return build(0);
+}
+function plant(kind, a, alt = 0) {
+  if (S.ents.filter(e => !e.dying).length >= CFG.maxEnts) {
+    const old = S.ents.find(e => !e.dying && e.kind !== 'liebe') || S.ents.find(e => !e.dying);
+    if (old) old.dying = S.worldT;
+  }
+  const e = makeEnt(kind, a, (Math.imul(S.ents.length + 13, 2654435761) ^ S.run ^ ((S.worldT * 997) | 0)) >>> 0, alt);
+  S.ents.push(e); AU.spawn(kind); save();
+  return e;
+}
+
+/* Speicherung — deine Welt bleibt bestehen (wenn der Browser es erlaubt) */
+const KEY = 'neon5_welt_v1';
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({
+      om: S.om,
+      e: S.ents.filter(e => !e.dying).map(e => ({ k: e.kind, a: +e.a.toFixed(4), s: e.seed, h: e.alt })),
+    }));
+  } catch (err) { /* privater Modus o.ä. */ }
+}
+function loadWorld() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (!d || !d.e) return;
+    S.om = d.om || 0;
+    for (const r of d.e.slice(0, CFG.maxEnts)) S.ents.push(makeEnt(r.k, r.a, r.s, r.h || 0, true));
+  } catch (err) { /* dann eben eine frische Welt */ }
+}
+loadWorld();
+
+/* ============ UPDATE ============ */
+function update(dt) {
+  S.worldT += dt;
+  S.om += CFG.rot * RM * dt;
+  S.harmony = clamp(S.ents.filter(e => e.kind === 'liebe' && !e.dying).length * .25, 0, 1);
+  if (RM === 1) {
+    shootT -= dt;
+    if (shootT <= 0 && !shoot) { shootT = 40 + Math.random() * 45; shoot = { x: W * (.15 + Math.random() * .6), y: H * .08 + Math.random() * H * .2, t: 0 }; }
+    if (shoot) { shoot.t += dt; if (shoot.t > 4) shoot = null; }
+  }
+  const alive = S.ents.filter(e => !e.dying).length;
+  for (const e of S.ents) {
+    const age = S.worldT - e.born;
+    if (e.kind === 'feuer') {
+      e.pt -= dt;
+      if (e.pt <= 0 && e.parts.length < 12) { e.pt = .45 + e.R() * .45; e.parts.push({ u: (e.R() - .5) * 10, v: 14 + e.R() * 12, ph: e.R() * 6.3, life: 4 + e.R() * 2, t: 0 }); }
+      for (let i = e.parts.length - 1; i >= 0; i--) { const p = e.parts[i]; p.t += dt; if (p.t > p.life) e.parts.splice(i, 1); }
+    }
+    if (e.kind === 'wasser') {
+      e.rt -= dt;
+      if (e.rt <= 0 && e.rings.length < 4) { e.rt = 2.6 + e.R() * 1.4; e.rings.push({ t: 0 }); }
+      for (let i = e.rings.length - 1; i >= 0; i--) { const r = e.rings[i]; r.t += dt; if (r.t > 8) e.rings.splice(i, 1); }
+      e.dtm -= dt;
+      if (e.dtm <= 0 && e.drops.length < 8) { e.dtm = .4 + e.R() * .3; e.drops.push({ x: 0, y: 0, vx: (e.R() - .5) * 36, vy: -(26 + e.R() * 26), t: 0 }); }
+      for (let i = e.drops.length - 1; i >= 0; i--) { const p = e.drops[i]; p.t += dt; p.vy += 52 * dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.y > 3) e.drops.splice(i, 1); }
+    }
+    if (e.kind === 'erde' && age > 26 && e.children < 2 && alive < CFG.maxEnts - 2 && !e.dying) {
+      if (Math.random() < dt * .012) { e.children++; plant('erde', e.a + (Math.random() - .5) * .14); } // die Welt sät sich selbst
+    }
+  }
+  S.ents = S.ents.filter(e => !e.dying || S.worldT - e.dying < 6);
+  S.saveT -= dt; if (S.saveT <= 0) { S.saveT = 20; save(); }
+}
+
+/* ============ ZEICHNEN ============ */
+function drawSky() {
+  const drift = S.om * R * .12;
+  for (const s of stars) {
+    const span = W * 1.25;
+    const x = ((s.x * span - drift) % span + span) % span - W * .12;
+    const y = s.y * H;
+    const a = .07 + .17 * (0.5 + 0.5 * Math.sin(S.worldT * s.sp * RM + s.ph));
+    ctx.fillStyle = s.acc ? col(PAL.liebe[0], a) : col(WHITE, a);
+    ctx.fillRect(x, y, 1.4, 1.4);
+  }
+  for (const wsp of wisps) { // ferne Nebel, kaum mehr als eine Ahnung
+    const a = .028 + .014 * Math.sin(S.worldT * .05 * RM + wsp.ph);
+    const p = new Path2D(); p.arc(wsp.x * W, wsp.y * H, wsp.r, wsp.a0, wsp.a0 + 2.2);
+    ctx.strokeStyle = col(mixc(RIMC, PAL.liebe[0], .5), a); ctx.lineWidth = 26; ctx.stroke(p);
+  }
+  if (shoot) {
+    const u = shoot.t / 4, al = Math.sin(u * Math.PI) * .35;
+    const x = shoot.x + u * 140, y = shoot.y + u * 55;
+    neon(line(x - 26, y - 10, x, y), PAL.wasser[1], al, .5, 5);
+  }
+}
+function drawPlanet() {
+  ctx.fillStyle = '#000'; ctx.fill(circle(CX, CY, R));
+  const c0 = -Math.PI / 2;
+  const rim = new Path2D(); rim.arc(CX, CY, R, c0 - ARC, c0 + ARC);
+  neon(rim, RIMC, .5, .6, 8);
+  const atmo = new Path2D(); atmo.arc(CX, CY, R + 7, c0 - ARC, c0 + ARC);
+  neon(atmo, RIMC, .1, 0, 6);
+  if (S.harmony > .01) { // Liebesschein
+    for (const [off, aa] of [[16, .09], [30, .045]]) {
+      const halo = new Path2D(); halo.arc(CX, CY, R + off, c0 - ARC, c0 + ARC);
+      neon(halo, PAL.liebe[0], aa * S.harmony, 0, 9);
+    }
+  }
+}
+function entAlpha(e) {
+  const inA = sm(clamp((S.worldT - e.born) / 2, 0, 1));
+  return e.dying ? inA * clamp(1 - (S.worldT - e.dying) / 6, 0, 1) : inA;
+}
+function visible(phi) { const [x, y] = spos(phi); return x > -170 && x < W + 170 && y < H + 90; }
+
+function drawTreeNode(nd, x, y, ang, depth, segLen, e, growPer) {
+  const lt = S.worldT - e.born - depth * growPer; if (lt <= 0) return;
+  const g = sm(Math.min(1, lt / growPer));
+  const a2 = ang + nd.da + Math.sin(S.worldT * .35 * RM + nd.ph + depth * .8) * .035 * (depth / 5);
+  const L = segLen * nd.len * g;
+  const x2 = x + Math.cos(a2) * L, y2 = y + Math.sin(a2) * L;
+  const al = entAlpha(e);
+  neon(line(x, y, x2, y2), PAL.erde[0], (.75 - depth * .08) * al, depth < 2 ? .6 : .2, 5);
+  if (g >= 1) {
+    for (const k of nd.kids) drawTreeNode(k, x2, y2, a2, depth + 1, segLen * .74, e, growPer);
+    if (!nd.kids.length) {
+      const ab = sm(Math.min(1, (lt - growPer) / 2.5)) * al;
+      dot(x2, y2, PAL.erde[1], .5 * ab, 3);
+      if (S.harmony > .01) neon(circle(x2, y2, 2.2), mixc(PAL.liebe[0], PAL.liebe[1], nd.bl), .6 * ab * S.harmony, .6, 4); // Blüten nur, wo Liebe ist
+    }
+  }
+}
+function drawEnt(e) {
+  if (e.kind === 'liebe') return drawLove(e);
+  const phi = e.a + S.om;
+  if (e.kind === 'wind') return drawWind(e);
+  if (!visible(phi)) return;
+  const [bx, by] = spos(phi);
+  const al = entAlpha(e);
+  ctx.save(); ctx.translate(bx, by); ctx.rotate(phi + Math.PI / 2);
+  if (e.kind === 'erde') {
+    const sc = H * .085 * e.sc;
+    for (let i = 0; i < 6; i++) { // Gräser am Fuß
+      const gx = (hash(e.seed + i * 7) - .5) * 44 * e.sc;
+      const gh = (8 + hash(e.seed + i * 13) * 12) * e.sc;
+      const sway = Math.sin(S.worldT * .3 * RM + i + e.ph) * 2.5;
+      const p = new Path2D(); p.moveTo(gx, 0); p.quadraticCurveTo(gx + sway * .5, -gh * .6, gx + sway, -gh);
+      neon(p, PAL.erde[1], .3 * al, 0, 4);
+    }
+    drawTreeNode(e.tree, 0, 0, -Math.PI / 2, 0, sc, e, CFG.grow / 5);
+  }
+  if (e.kind === 'feuer') {
+    neon(poly([[-9, 0], [0, -6], [9, 0]]), PAL.feuer[0], .5 * al, .3, 5);
+    for (let f = 0; f < 3; f++) {
+      const sway = Math.sin(S.worldT * (.22 + f * .05) * RM + e.ph + f * 2.1) * (3 + f * 2);
+      const hgt = (17 + f * 8) * e.sc * (1 + .06 * Math.sin(S.worldT * .3 * RM + f));
+      const p = new Path2D(); p.moveTo(-3 + f * 3, 0); p.quadraticCurveTo(sway * .5, -hgt * .55, sway, -hgt);
+      neon(p, mixc(PAL.feuer[0], PAL.feuer[1], f / 2), .5 * al, f === 1 ? .5 : 0, 5);
+    }
+    for (const p of e.parts) {
+      const hh = p.v * p.t, fade = clamp(1 - p.t / p.life, 0, 1);
+      const gold = mixc(PAL.feuer[1], PAL.liebe[1], S.harmony * .6);
+      dot(p.u + Math.sin(p.t * .8 + p.ph) * 6, -7 - hh, mixc(PAL.feuer[0], gold, p.t / p.life), .65 * fade * al, 3);
+    }
+  }
+  if (e.kind === 'wasser') {
+    const sh = .3 + .12 * Math.sin(S.worldT * .15 * RM + e.ph);
+    neon(line(-13, -1, 13, -1), PAL.wasser[1], sh * al, .4, 5);
+    for (const r of e.rings) {
+      const rr = 4 + r.t * 7.5, fal = clamp(1 - rr / 64, 0, 1) * sm(r.t * 2);
+      const p = new Path2D(); p.ellipse(0, -1, rr, rr * .3, 0, 0, Math.PI * 2);
+      neon(p, PAL.wasser[0], .45 * fal * al, .3, 5);
+    }
+    for (const p of e.drops) {
+      const fade = clamp(1 - p.t / 2.2, 0, 1);
+      const cl = S.harmony > .3 && ((p.t * 7) | 0) % 3 === 0 ? PAL.wasser[2] : PAL.wasser[1];
+      dot(p.x, p.y - 3, cl, .6 * fade * al, 2.5);
+    }
+  }
+  ctx.restore();
+}
+function drawWind(e) {
+  const al = entAlpha(e) * .9;
+  for (let k = 0; k < e.n; k++) {
+    const phd = e.ph + k * Math.PI * 2 / e.n + S.worldT * e.spd * RM;
+    if (!visible(phd)) continue;
+    const rr = R + e.alt + Math.sin(S.worldT * .18 * RM + k * 1.3 + e.ph) * 7;
+    const pts = [];
+    for (let j = 0; j <= 3; j++) { const pj = phd + j * .02; pts.push([CX + rr * Math.cos(pj), CY + rr * Math.sin(pj)]); }
+    neon(poly(pts), PAL.wind[0], .26 * al, 0, 5);
+    dot(pts[3][0], pts[3][1], PAL.wind[1], .4 * al, 2.5);
+  }
+}
+function drawLove(e) {
+  const al = entAlpha(e);
+  const alt = 48 + 20 * Math.sin(S.worldT * .11 * RM + e.ph);
+  const phiM = e.a + S.om + Math.sin(S.worldT * .04 * RM + e.ph) * .24; // pendelt, fliegt nie davon
+  if (!visible(phiM)) return;
+  const [x, y] = spos(phiM, alt);
+  const pulse = .8 + .2 * Math.sin(S.worldT * .15 * RM + e.ph);
+  ctx.fillStyle = col(PAL.liebe[0], .16 * al * pulse); ctx.fillRect(x - 7, y - 7, 14, 14);
+  dot(x, y, PAL.liebe[0], .95 * al * pulse, 5);
+  for (const an of [0, Math.PI / 2, Math.PI, Math.PI * 1.5])
+    neon(line(x + Math.cos(an) * 5, y + Math.sin(an) * 5, x + Math.cos(an) * 10, y + Math.sin(an) * 10), PAL.liebe[1], .55 * al * pulse, 0, 4);
+  // Fäden zu den zwei nächsten Geschöpfen — Liebe verbindet
+  const targets = S.ents
+    .filter(o => o !== e && !o.dying && o.kind !== 'wind' && o.kind !== 'liebe')
+    .map(o => ({ o, d: Math.abs(angDiff(o.a + S.om, phiM)) }))
+    .filter(t => t.d < .6).sort((p, q) => p.d - q.d).slice(0, 2);
+  targets.forEach((t, i) => {
+    const [tx, ty] = spos(t.o.a + S.om);
+    const midPhi = phiM + angDiff(t.o.a + S.om, phiM) / 2;
+    const [mx, my] = spos(midPhi, alt * .5 + 26);
+    const p = new Path2D(); p.moveTo(x, y); p.quadraticCurveTo(mx, my, tx, ty);
+    neon(p, PAL.liebe[0], (.2 + .08 * Math.sin(S.worldT * .13 * RM + i * 2)) * al, 0, 5);
+  });
+}
+
+/* ============ UI ============ */
+function btnRects() {
+  const u = UI, bw = Math.min(84 * u, (W - 24) / 5 - 6), bh = 32 * u, gap = 6;
+  const total = bw * 5 + gap * 4, x0 = W / 2 - total / 2, y0 = H - 14 * u - bh;
+  return ELEMENTS.map((e, i) => ({ x: x0 + i * (bw + gap), y: y0, w: bw, h: bh, e, i }));
+}
+function topBtns() {
+  const u = UI, bs = 26 * u, gap = 8 * u, y0 = 14 * u;
+  return [['M', AU.on], ['G', CFG.glow], ['×', true]].map(([n, on], i) => ({ x: W - 14 * u - (3 - i) * (bs + gap) + gap, y: y0, s: bs, n, on }));
+}
+function drawUI() {
+  const u = UI;
+  txt('NEON5 · DIE FÜNF ELEMENTE · V0.3', 14 * u, 18 * u, 9 * u, RIMC, .3, 'left');
+  for (const b of btnRects()) {
+    const seld = S.sel === b.i, c = PAL[b.e.k][0];
+    const p = new Path2D(); p.rect(b.x, b.y, b.w, b.h);
+    neon(p, c, seld ? .8 : .22, seld ? .7 : 0, 5);
+    txt(b.e.n, b.x + b.w / 2, b.y + b.h / 2 + 1, 9.5 * u, seld ? WHITE : c, seld ? .95 : .5, 'center');
+  }
+  for (const b of topBtns()) {
+    const p = new Path2D(); p.rect(b.x, b.y, b.s, b.s);
+    neon(p, b.on ? RIMC : [90, 100, 105], b.on ? .5 : .25, 0, 5);
+    txt(b.n, b.x + b.s / 2, b.y + b.s / 2 + 1, 12 * u, b.on ? WHITE : [130, 140, 145], b.on ? .8 : .45, 'center');
+  }
+  const hintA = clamp(1 - (S.worldT - (S.startT || 0) - 8) / 8, 0, .34);
+  if (S.started && hintA > .01) txt('WÄHLE EIN ELEMENT · BERÜHRE DEN PLANETEN', W / 2, H - 58 * u, 9.5 * u, PAL[ELEMENTS[S.sel].k][0], hintA, 'center', 1);
+}
+
+/* ============ EINGABE ============ */
+function start() {
+  if (S.started) return;
+  S.started = true; S.startT = S.worldT;
+  document.getElementById('intro').classList.add('hide');
+  if (CFG.audio) AU.init();
+  AU.resume();
+}
+const introEl = document.getElementById('intro');
+for (const ev of ['pointerdown', 'touchstart', 'click'])
+  introEl.addEventListener(ev, e => { e.preventDefault(); start(); }, { passive: false });
+addEventListener('keydown', e => {
+  start();
+  const c = e.code;
+  if (c === 'Space') e.preventDefault();
+  const num = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Digit5: 4, Numpad1: 0, Numpad2: 1, Numpad3: 2, Numpad4: 3, Numpad5: 4 }[c];
+  if (num !== undefined) S.sel = num;
+  else if (c === 'KeyM') AU.toggle();
+  else if (c === 'KeyG') CFG.glow = !CFG.glow;
+  else if (c === 'KeyC') letGo();
+});
+function letGo() { for (const e of S.ents) if (!e.dying) e.dying = S.worldT; save(); }
+addEventListener('visibilitychange', () => { document.hidden ? AU.suspend() : (S.started && AU.resume()); });
+cv.addEventListener('pointerdown', ev => {
+  const wasStarted = S.started; start();
+  if (!wasStarted) return;
+  const x = ev.clientX, y = ev.clientY;
+  for (const b of topBtns()) if (x >= b.x - 5 && x <= b.x + b.s + 5 && y >= b.y - 5 && y <= b.y + b.s + 5) {
+    if (b.n === 'M') AU.toggle(); else if (b.n === 'G') CFG.glow = !CFG.glow; else letGo();
+    return;
+  }
+  for (const b of btnRects()) if (x >= b.x && x <= b.x + b.w && y >= b.y - 6 && y <= b.y + b.h + 6) { S.sel = b.i; return; }
+  if (S.worldT - S.lastPlant < .18) return; S.lastPlant = S.worldT;
+  const dx = x - CX, dy = y - CY, dist = Math.hypot(dx, dy);
+  const phi = Math.atan2(dy, dx), kind = ELEMENTS[S.sel].k;
+  if (kind === 'wind') plant(kind, phi - S.om, clamp(dist - R, 24, 150));
+  else plant(kind, phi - S.om);
+});
+
+/* ============ SCHLEIFE ============ */
+let last = performance.now();
+function frame(t) {
+  const dt = Math.min((t - last) / 1000, .06); last = t;
+  update(dt);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  drawSky();
+  drawPlanet();
+  for (const e of S.ents) if (e.kind !== 'liebe') drawEnt(e);
+  for (const e of S.ents) if (e.kind === 'liebe') drawEnt(e); // Liebe zuletzt: ihre Fäden liegen oben
+  drawUI();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// Debug-Griff für Tests: NF.plant('erde', -0.3), NF.warp(15)
+window.NF = { S, plant: (k, off = 0, alt = 40) => plant(k, -Math.PI / 2 + off - S.om, k === 'wind' ? alt : 0), warp(sec) { const st = .033; for (let k = 0; k < sec / st; k++) update(st); }, letGo };
+
+})();
+</script>
+</body>
+</html>
