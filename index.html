@@ -88,7 +88,9 @@ function resize() {
   DPR = Math.min(devicePixelRatio || 1, 2);
   cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
   UI = Math.max(.8, Math.min(1.4, Math.min(W, H) / 700));
-  R = Math.max(W, H) * .85; CX = W / 2; CY = H * .64 + R;
+  // Hochformat bekommt einen kleineren Radius, damit die Krümmung des Planeten spürbar bleibt
+  R = H > W ? Math.max(H * .5, W * 1.15) : Math.max(W, H) * .85;
+  CX = W / 2; CY = H * .64 + R;
   ARC = Math.asin(Math.min(.999, (W / 2 + 170) / R));
 }
 addEventListener('resize', resize); resize();
@@ -681,7 +683,10 @@ function drawFeuer(e) {
     p.quadraticCurveTo(off + wf + sway * .6, y0 - hgt * .5, off + wf, y0);
     neon(p, mixc(e.C[0], e.C[1], fl > 1 ? k / (fl - 1) : .5), .5 * al, k === ((fl / 2) | 0) ? .5 : 0, 5);
   }
-  if (f === 'irrlicht') { ctx.fillStyle = col(e.C[1], .12 * al); ctx.fillRect(-10, y0 - 16, 20, 22); }
+  if (f === 'irrlicht') { // weicher, gestufter Schein statt harter Kante
+    ctx.fillStyle = col(e.C[1], .045 * al); ctx.fillRect(-13, y0 - 19, 26, 27);
+    ctx.fillStyle = col(e.C[1], .08 * al); ctx.fillRect(-7, y0 - 13, 14, 16);
+  }
   if (f === 'glut' || fl === 0) { // Glutnest: auch Funken-Quellen brauchen eine sichtbare Herkunft
     for (let k = 0; k < 9; k++) {
       const gx = (hash(e.seed + k * 3) - .5) * 30, gy = -2 - hash(e.seed + k * 7) * 9;
