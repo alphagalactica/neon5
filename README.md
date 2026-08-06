@@ -2,6 +2,11 @@
 
 Ein digitales Kunstwerk. Frei für alle.
 
+> *English: a calm generative art piece — a black planet in a dark universe,
+> five elemental forces at your fingertip, and a music-box symphony your world
+> composes itself. No build, no assets, one HTML file. Contributions welcome,
+> see [CONTRIBUTING.md](CONTRIBUTING.md). Everything is CC0.*
+
 Ein schwarzer Planet in einem dunklen Universum — und ein Finger, der Welten erschafft:
 **Erde, Feuer, Wasser, Wind** und **Liebe**, das fünfte Element, das alles verbindet.
 
@@ -45,8 +50,22 @@ ihr Name leuchtet kurz auf.
 - Die Welt wird lokal im Browser gespeichert und wartet beim nächsten Besuch —
   die nächste Session spielt sie neu.
 
-Kein Asset, kein Build, keine Abhängigkeiten — eine einzige HTML-Datei.
-Klang vollständig prozedural (WebAudio).
+Kein Asset, kein Build, keine Abhängigkeiten. Klang vollständig prozedural (WebAudio).
+
+## Mitmachen
+
+Die Bibliothek der Erscheinungen lebt in **[`variants.js`](variants.js)** — eine
+Variante pro Zeile, das Schema steht als Kommentar am Dateikopf. Der einfachste
+Beitrag ist eine neue Erscheinung: eine Zeile anhängen, im Browser prüfen
+(Konsole: `NF.gallery('erde', 0)`), Screenshot in den Pull Request. Alles Weitere —
+Ruhe-Regeln, Projektaufbau, PR-Checkliste — in **[CONTRIBUTING.md](CONTRIBUTING.md)**.
+
+| Datei | Inhalt |
+| --- | --- |
+| [`index.html`](index.html) | Engine: Planet, Formen-Renderer, Spieluhr-Sequencer, UI |
+| [`variants.js`](variants.js) | Bibliothek der 120 Erscheinungen — der Ort für Beiträge |
+| [`neongarten.html`](neongarten.html) | v0.2-Vorstufe des Projekts |
+| [`Dockerfile`](Dockerfile) · [`docker-compose.yml`](docker-compose.yml) | Deployment |
 
 ## Historie
 
