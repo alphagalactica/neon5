@@ -8,20 +8,30 @@
   html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}
   #stage{position:fixed;inset:0;display:block;touch-action:none;cursor:pointer}
   #intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    background:rgba(0,0,0,.55);z-index:10;transition:opacity 1.2s ease;user-select:none;-webkit-user-select:none;
-    touch-action:none;cursor:pointer;font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;color:#cfd6da}
+    background:rgba(0,0,0,.62);z-index:10;transition:opacity 1.2s ease;user-select:none;-webkit-user-select:none;
+    touch-action:none;cursor:pointer;font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;color:#cfd6da;
+    overflow:auto}
   #intro.hide{opacity:0;pointer-events:none}
-  #intro .box{border:1px solid #ffb9d6;box-shadow:0 0 16px rgba(255,185,214,.35), inset 0 0 22px rgba(255,185,214,.08);
-    background:rgba(0,0,0,.72);padding:26px 34px;max-width:88vw}
-  #intro .t1{color:#fff;font-size:clamp(20px,5vw,34px);letter-spacing:.5em;margin-right:-.5em;white-space:nowrap;
-    text-shadow:0 0 1px #fff,0 0 10px #ffb9d6,0 0 26px #ffb9d6}
-  #intro .t2{color:#9be8ff;font-size:12px;letter-spacing:.28em;margin:10px 0 0;text-shadow:0 0 8px rgba(155,232,255,.5)}
-  #intro .rule{height:1px;background:#ffb9d6;box-shadow:0 0 8px #ffb9d6;margin:16px 0;position:relative}
+  #intro .box{border:1px solid #ffb9d6;box-shadow:0 0 18px rgba(255,185,214,.4), inset 0 0 26px rgba(255,185,214,.08);
+    background:rgba(0,0,0,.78);padding:34px 42px;max-width:88vw;margin:20px;text-align:center}
+  #intro .pre{color:#9be8ff;font-size:11px;letter-spacing:.34em;margin:0 0 14px}
+  #intro .t1{color:#fff;font-size:clamp(26px,7vw,44px);letter-spacing:.5em;margin-right:-.5em;white-space:nowrap;
+    text-shadow:0 0 1px #fff,0 0 12px #ffb9d6,0 0 30px #ffb9d6}
+  #intro .t2{color:#9be8ff;font-size:12px;letter-spacing:.3em;margin:12px 0 0}
+  #intro .rule{height:1px;background:#ffb9d6;box-shadow:0 0 8px #ffb9d6;margin:20px auto;position:relative;max-width:340px}
   #intro .rule::after{content:'';position:absolute;inset:0;background:#fff;transform:scaleY(.5);opacity:.9}
-  #intro p{margin:0 0 14px;font-size:12px;line-height:1.85;color:#9fb2ba;max-width:46ch}
-  #intro pre{margin:0;font-size:12px;line-height:1.9;color:#9fb2ba;font-family:inherit}
-  #intro pre b{color:#fff;font-weight:normal}
-  #intro .go{margin-top:18px;font-size:12px;letter-spacing:.22em;color:#fff;animation:blink 3s ease-in-out infinite}
+  #intro .st{margin:0 auto 16px;font-size:12.5px;line-height:2;color:#aebcc4;max-width:52ch;text-align:center}
+  #intro .elems{display:flex;gap:14px;justify-content:center;margin:18px 0 6px;flex-wrap:wrap}
+  #intro .elems span{font-size:10px;letter-spacing:.22em;padding:5px 9px;border:1px solid}
+  #intro .e1{color:#7fe87f;border-color:#7fe87f;box-shadow:0 0 8px rgba(127,232,127,.4)}
+  #intro .e2{color:#ff8a50;border-color:#ff8a50;box-shadow:0 0 8px rgba(255,138,80,.4)}
+  #intro .e3{color:#5fc8ff;border-color:#5fc8ff;box-shadow:0 0 8px rgba(95,200,255,.4)}
+  #intro .e4{color:#d8f0ff;border-color:#d8f0ff;box-shadow:0 0 8px rgba(216,240,255,.4)}
+  #intro .e5{color:#ffb9d6;border-color:#ffb9d6;box-shadow:0 0 8px rgba(255,185,214,.4)}
+  #intro .hint{margin:14px 0 0;font-size:11px;line-height:1.9;color:#7f8f98}
+  #intro .go{margin-top:20px;font-size:13px;letter-spacing:.26em;color:#fff;animation:blink 3s ease-in-out infinite}
+  #intro .lic{margin-top:22px;font-size:10px;letter-spacing:.14em;color:#5f6f78}
+  #intro .lic a{color:#7f9bb8}
   @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
   @media (prefers-reduced-motion:reduce){#intro .go{animation:none;opacity:.9}}
 </style>
@@ -29,16 +39,20 @@
 <body>
 <canvas id="stage"></canvas>
 <div id="intro"><div class="box">
+  <div class="pre">EIN DIGITALES KUNSTWERK</div>
   <div class="t1">NEON5</div>
-  <div class="t2">DIE FÜNF ELEMENTE · V0.3</div>
+  <div class="t2">DIE FÜNF ELEMENTE</div>
   <div class="rule"></div>
-  <p>Ein schwarzer Planet in einem dunklen Universum. Erschaffe mit deinem Finger:
-  Erde, Feuer, Wasser, Wind — und Liebe, das fünfte Element, das alles verbindet.
-  Dann schau zu, wie deine Welt ihr eigenes Leben führt.</p>
-  <pre><b>element wählen</b>  unten tippen · Tasten 1–5
-<b>erschaffen</b>      den Planeten berühren
-<b>M</b> ton · <b>G</b> glow · <b>×</b> welt loslassen</pre>
-  <div class="go">TIPPEN ZUM ERSCHAFFEN</div>
+  <p class="st">Ein schwarzer Planet in einem dunklen Universum.
+  Fünf Kräfte unter deiner Fingerspitze. Was du pflanzt, wird Teil einer Spieluhr:
+  Ein Taktlicht umkreist den Planeten und spielt deine Welt als Symphonie —
+  wo du erschaffst, bestimmt Takt und Klangfarbe. Sie gerät nie aus dem Takt,
+  sie kennt keine Dissonanz. Und doch klingt kein Besuch wie der andere.</p>
+  <div class="elems"><span class="e1">ERDE</span><span class="e2">FEUER</span><span class="e3">WASSER</span><span class="e4">WIND</span><span class="e5">LIEBE</span></div>
+  <p class="hint">Element wählen (unten, oder Tasten 1–5) · den Planeten berühren ·
+  M Ton · G Glow · × die Welt loslassen · i diese Seite</p>
+  <div class="go">EINTRETEN</div>
+  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI</div>
 </div></div>
 <script>
 'use strict';
@@ -54,6 +68,11 @@ const ELEMENTS = [
   { k: 'liebe',  n: 'LIEBE',  c: ['#FFB9D6', '#FFE8F0', '#FFFFFF'] },
 ];
 const RIM = '#7F9BFF';
+
+/* ============ VARIANTEN-BIBLIOTHEK ============
+   Je Element 24 Erscheinungen: Name, Palette, Formtyp, Parameter.
+   (Wird generativ befüllt — Platzhalter, bis die Bibliothek eingespielt ist.) */
+const VAR = /*__VAR__*/{erde:[{n:"NEBELBIRKE",c:["#A8E4B0","#7FCF9E","#D9F5C9"],f:"baum",p:{depth:5,spread:0.55,droop:0.6,len:1.1,blossom:0,leaf:1}},{n:"GLUTAHORN",c:["#FFC978","#E8A24D","#FFE6A3"],f:"baum",p:{depth:6,spread:0.85,droop:0.15,len:0.9,blossom:0,leaf:2}},{n:"KIRSCHTRAUM",c:["#F8B8D0","#E88BB1","#FFE1EE"],f:"baum",p:{depth:5,spread:0.7,droop:0.35,len:0.75,blossom:1,leaf:1}},{n:"MOOSKIEFER",c:["#6FBF73","#4EA85F","#C8E6A0"],f:"baum",p:{depth:4,spread:0.4,droop:0.05,len:1.35,blossom:0,leaf:0}},{n:"STERNENDOLDE",c:["#E4F7D0","#B8E69E","#FFFFD8"],f:"blume",p:{stem:48,petals:16,head:0.8,pstyle:0,heads:3}},{n:"NACHTVIOLE",c:["#C9A8F0","#A47FE0","#E6D6FF"],f:"blume",p:{stem:34,petals:10,head:1.1,pstyle:1,heads:1}},{n:"TAULATERNE",c:["#A0EFC8","#6FD1A8","#D2FBE8"],f:"blume",p:{stem:26,petals:12,head:0.6,pstyle:2,heads:2}},{n:"LICHTNELKE",c:["#B4E85A","#8FCC4A","#E2FA9C"],f:"blume",p:{stem:58,petals:9,head:1.3,pstyle:0,heads:2}},{n:"SCHATTENFARN",c:["#5FAF8A","#3F9F6F","#9FE0C0"],f:"farn",p:{fronds:3,curl:0.45,lean:-0.2,size:1.15}},{n:"WELLENFARN",c:["#86E0A6","#5FBF8C","#C4F2D6"],f:"farn",p:{fronds:2,curl:0.3,lean:0.25,size:0.8}},{n:"FLÜSTERFARN",c:["#B9D18A","#94B562","#E4F0B8"],f:"farn",p:{fronds:1,curl:0.38,lean:0,size:0.65}},{n:"WINDHALM",c:["#A9E67E","#78C95A","#DCF7B4"],f:"gras",p:{blades:20,height:1.4,lean:0.35}},{n:"SEIDENRIED",c:["#D0EFA8","#A2CF7A","#F0FBD2"],f:"gras",p:{blades:10,height:0.8,lean:-0.1}},{n:"WIESENHAUCH",c:["#6FE08F","#49C46F","#B0F5C4"],f:"gras",p:{blades:16,height:1.1,lean:-0.3}},{n:"TÜRKISDORN",c:["#7FE0D4","#4FC4B8","#C2F7F0"],f:"kaktus",p:{segs:3,width:8,arms:2,spikes:1}},{n:"STILLDORN",c:["#9CCB8E","#74AF6B","#D4EDC2"],f:"kaktus",p:{segs:2,width:6,arms:0,spikes:0}},{n:"WÜSTENKERZE",c:["#A8D96E","#7FBF52","#F2E8A0"],f:"kaktus",p:{segs:4,width:9.5,arms:1,spikes:1}},{n:"GLIMMERLING",c:["#C2F0DC","#8ADBB4","#ECFFF4"],f:"pilz",p:{caps:1,capw:24,stem:18,dots:1}},{n:"MOOSGLÖCKCHEN",c:["#8FBF66","#6BA845","#C6E29A"],f:"pilz",p:{caps:3,capw:12,stem:9,dots:0}},{n:"SPORENLICHT",c:["#DCF59E","#B4E060","#F6FFC8"],f:"pilz",p:{caps:2,capw:17,stem:14,dots:1}},{n:"GLETSCHERSPAT",c:["#C8F5E0","#96E6C8","#EAFFF6"],f:"kristall",p:{shards:6,height:30,spread:0.45}},{n:"MOOSQUARZ",c:["#83CF8B","#5CAF6E","#BCEDC2"],f:"kristall",p:{shards:3,height:14,spread:0.85}},{n:"WALDPRISMA",c:["#4FBF87","#2FA86A","#9FE8C4"],f:"kristall",p:{shards:5,height:24,spread:0.6}},{n:"TAUSPLITTER",c:["#DDF2A4","#B9DE7C","#F8FFDB"],f:"kristall",p:{shards:7,height:18,spread:0.35}}],feuer:[{n:"WACHSLICHT",c:["#FFD9A0","#FFB36B","#FFF2C9"],f:"kerze",p:{flames:1,fh:0.7,base:0,embers:0.4,epat:0,hover:0,lava:0}},{n:"SEELENLICHT",c:["#FFF6E0","#DCE6FF","#FFE9A8"],f:"kerze",p:{flames:1,fh:0.6,base:1,embers:0.3,epat:2,hover:0,lava:0}},{n:"NACHTKERZE",c:["#FF9E7A","#D96A4E","#FFC9A3"],f:"kerze",p:{flames:1,fh:0.9,base:1,embers:0.5,epat:0,hover:0,lava:0}},{n:"ALTARLICHT",c:["#FFCE5C","#FFA83D","#FFEFB0"],f:"kerze",p:{flames:1,fh:0.5,base:0,embers:0.3,epat:2,hover:0,lava:0}},{n:"HIRTENFEUER",c:["#FFA35C","#FF7B47","#FFD98F"],f:"lagerfeuer",p:{flames:3,fh:1.4,base:1,embers:0.9,epat:0,hover:0,lava:0}},{n:"SONNWENDBRAND",c:["#FF8A66","#FFC24D","#FFE8B3"],f:"lagerfeuer",p:{flames:4,fh:1.8,base:1,embers:1.2,epat:1,hover:0,lava:0}},{n:"STEPPENBRAND",c:["#FF6E52","#E8543C","#FFB08A"],f:"lagerfeuer",p:{flames:4,fh:2,base:1,embers:1.4,epat:0,hover:0,lava:0}},{n:"HÜTTENSCHEIN",c:["#FFB878","#FF9A54","#FFE3B8"],f:"lagerfeuer",p:{flames:2,fh:1,base:1,embers:0.6,epat:2,hover:0,lava:0}},{n:"WANDERFLAMME",c:["#FFAD66","#D97B3F","#FFF0C2"],f:"lagerfeuer",p:{flames:3,fh:1.2,base:1,embers:1,epat:1,hover:0,lava:0}},{n:"LAVAHERZ",c:["#FF6B4A","#FFAE3F","#FFE08C"],f:"vulkan",p:{flames:2,fh:1.6,base:3,embers:1.4,epat:0,hover:0,lava:1}},{n:"ASCHEKRONE",c:["#FF8C5A","#C25039","#FFC9A0"],f:"vulkan",p:{flames:1,fh:1.2,base:3,embers:0.9,epat:2,hover:0,lava:1}},{n:"MAGMALIED",c:["#FFB347","#FF7040","#FFEBAD"],f:"vulkan",p:{flames:3,fh:2.2,base:3,embers:1.6,epat:1,hover:0,lava:1}},{n:"FEUERBERG",c:["#F25C43","#FF9C4F","#FFD489"],f:"vulkan",p:{flames:2,fh:1.9,base:3,embers:1.1,epat:0,hover:0,lava:1}},{n:"MOORLICHT",c:["#8FD8FF","#5FA8E8","#CFF0FF"],f:"irrlicht",p:{flames:1,fh:0.8,base:0,embers:0.5,epat:1,hover:18,lava:0}},{n:"GEISTERFUNKE",c:["#9FFFC9","#5FE8A0","#DCFFE8"],f:"irrlicht",p:{flames:1,fh:0.7,base:0,embers:0.6,epat:1,hover:22,lava:0}},{n:"SUMPFSCHEIN",c:["#C9FF8F","#9FE85C","#EFFFC9"],f:"irrlicht",p:{flames:1,fh:0.6,base:0,embers:0.4,epat:2,hover:12,lava:0}},{n:"DÜNENLICHT",c:["#FFC98F","#FFA05C","#FFEDC9"],f:"irrlicht",p:{flames:1,fh:0.9,base:0,embers:0.5,epat:0,hover:15,lava:0}},{n:"SCHMIEDEFUNKE",c:["#FFD45C","#FF9E3D","#FFF3C2"],f:"funken",p:{flames:0,fh:0.5,base:0,embers:1.8,epat:0,hover:0,lava:0}},{n:"FUNKENREGEN",c:["#FF8A5C","#FFB84D","#FFE3C2"],f:"funken",p:{flames:1,fh:0.6,base:1,embers:2,epat:0,hover:0,lava:0}},{n:"GLIMMERFLUG",c:["#FFAA72","#E87A45","#FFD9B0"],f:"funken",p:{flames:0,fh:0.7,base:0,embers:1.4,epat:1,hover:0,lava:0}},{n:"SONNENSPLITTER",c:["#FFE58F","#FFC24A","#FFFBE0"],f:"funken",p:{flames:1,fh:0.8,base:0,embers:1.6,epat:2,hover:0,lava:0}},{n:"ASCHENROSE",c:["#FFB3C9","#E88AA8","#FFDDE8"],f:"glut",p:{flames:0,fh:0.5,base:1,embers:0.4,epat:2,hover:0,lava:0}},{n:"VEILCHENGLUT",c:["#C9A0FF","#9F6BE8","#E8D6FF"],f:"glut",p:{flames:0,fh:0.6,base:2,embers:0.5,epat:1,hover:0,lava:0}},{n:"KOHLENHERZ",c:["#FF7A52","#D9503A","#FFB891"],f:"glut",p:{flames:0,fh:0.5,base:1,embers:0.7,epat:0,hover:0,lava:0}}],wasser:[{n:"STERNQUELLE",c:["#7FB8FF","#A8D8FF","#E8F4FF"],f:"quelle",p:{rings:3,ringspd:0.9,drops:5,dvx:18,dvy:30,pool:6,mist:0,ice:0,period:0}},{n:"TAUBORN",c:["#7FFFE8","#B8FFF4","#5FD9C8"],f:"quelle",p:{rings:2,ringspd:1.2,drops:8,dvx:25,dvy:40,pool:4,mist:0,ice:0,period:0}},{n:"SILBERQUELL",c:["#D9DFF2","#AAB4D6","#F2F6FF"],f:"quelle",p:{rings:4,ringspd:0.6,drops:3,dvx:12,dvy:22,pool:8,mist:0,ice:0,period:0}},{n:"KORALLENBORN",c:["#5FE8D9","#9FFFE0","#D0FFF4"],f:"quelle",p:{rings:3,ringspd:1.1,drops:6,dvx:30,dvy:48,pool:10,mist:0,ice:0,period:0}},{n:"TIEFENADER",c:["#6F8FFF","#9FB8FF","#5FE0FF"],f:"quelle",p:{rings:4,ringspd:0.7,drops:4,dvx:15,dvy:55,pool:12,mist:0,ice:0,period:0}},{n:"NACHTFONTÄNE",c:["#8FA8FF","#C8D8FF","#EAF0FF"],f:"geysir",p:{rings:1,ringspd:1,drops:7,dvx:20,dvy:65,pool:8,mist:0,ice:0,period:7}},{n:"HIMMELSPRUDEL",c:["#7FE8FF","#BFF4FF","#5FBFFF"],f:"geysir",p:{rings:2,ringspd:1.3,drops:9,dvx:28,dvy:70,pool:12,mist:0,ice:0,period:5}},{n:"DAMPFSÄULE",c:["#A8F0E8","#D8FFF8","#8FD9FF"],f:"geysir",p:{rings:0,ringspd:0.8,drops:4,dvx:14,dvy:58,pool:5,mist:1,ice:0,period:9}},{n:"WOGENSTOSS",c:["#5FD9FF","#9FEFFF","#4FA8E8"],f:"geysir",p:{rings:2,ringspd:1.1,drops:10,dvx:35,dvy:62,pool:15,mist:0,ice:0,period:4}},{n:"PERLENBRUNN",c:["#F2DFF0","#BFE8E4","#FFD9EC"],f:"brunnen",p:{rings:1,ringspd:1,drops:8,dvx:32,dvy:35,pool:18,mist:0,ice:0,period:0}},{n:"TROPFENSPIEL",c:["#8FB8FF","#BFD8FF","#6FE8FF"],f:"brunnen",p:{rings:2,ringspd:1.4,drops:10,dvx:45,dvy:45,pool:14,mist:0,ice:0,period:0}},{n:"MUSCHELBRUNNEN",c:["#6FE8C8","#A8FFE4","#D8FFF0"],f:"brunnen",p:{rings:0,ringspd:0.9,drops:7,dvx:26,dvy:28,pool:25,mist:0,ice:0,period:0}},{n:"ABENDBRUNNEN",c:["#F5A8C8","#FFD0E4","#D98FBF"],f:"brunnen",p:{rings:1,ringspd:0.7,drops:6,dvx:38,dvy:40,pool:30,mist:0,ice:0,period:0}},{n:"SCHLEIERDUNST",c:["#BFEFF4","#E0F8FF","#9FD8E8"],f:"nebel",p:{rings:0,ringspd:0.6,drops:0,dvx:10,dvy:15,pool:0,mist:1,ice:0,period:0}},{n:"MORGENHAUCH",c:["#C8D8F8","#E8F0FF","#A8C8F0"],f:"nebel",p:{rings:1,ringspd:0.8,drops:1,dvx:12,dvy:20,pool:3,mist:1,ice:0,period:0}},{n:"UFERNEBEL",c:["#AFE0D8","#D4F2EC","#8FC8D9"],f:"nebel",p:{rings:1,ringspd:0.5,drops:2,dvx:16,dvy:18,pool:6,mist:1,ice:0,period:0}},{n:"SPIEGELTEICH",c:["#7FA8E8","#B8D0FF","#DFEAFF"],f:"teich",p:{rings:3,ringspd:0.8,drops:1,dvx:12,dvy:16,pool:26,mist:0,ice:0,period:0}},{n:"LOTOSWEIHER",c:["#8FE8D0","#C8FFE8","#5FC8B8"],f:"teich",p:{rings:2,ringspd:1,drops:3,dvx:20,dvy:24,pool:20,mist:0,ice:0,period:0}},{n:"DÄMMERTEICH",c:["#A88FE8","#CDB8FF","#7F5FD9"],f:"teich",p:{rings:4,ringspd:0.6,drops:2,dvx:14,dvy:18,pool:30,mist:1,ice:0,period:0}},{n:"SEEROSENRUH",c:["#6FD9E8","#A8F0F8","#E0FBFF"],f:"teich",p:{rings:3,ringspd:1.2,drops:0,dvx:10,dvy:15,pool:22,mist:0,ice:0,period:0}},{n:"FROSTADER",c:["#9FD8FF","#D0ECFF","#7FB8E8"],f:"eisquelle",p:{rings:2,ringspd:0.5,drops:3,dvx:14,dvy:25,pool:8,mist:0,ice:1,period:0}},{n:"KRISTALLQUELL",c:["#9FE8C8","#CFFAE4","#6FD9B0"],f:"eisquelle",p:{rings:3,ringspd:0.7,drops:5,dvx:18,dvy:32,pool:5,mist:0,ice:1,period:0}},{n:"EISBORN",c:["#BFE8F8","#E4F6FF","#8FCFEF"],f:"eisquelle",p:{rings:1,ringspd:0.6,drops:2,dvx:12,dvy:20,pool:12,mist:1,ice:1,period:0}},{n:"FIRNTRÄNE",c:["#7FCFE8","#B0E8F4","#5F9FD9"],f:"eisquelle",p:{rings:4,ringspd:0.8,drops:4,dvx:22,dvy:38,pool:10,mist:0,ice:1,period:0}}],wind:[{n:"SILBERWIND",c:["#C9DBF2","#F4F9FF","#9FC4E8"],f:"band",p:{n:6,spd:0.03,amp:5,len:1.2,turns:1}},{n:"PASSATBAND",c:["#9FE0FF","#DFF6FF","#6FB8E8"],f:"band",p:{n:8,spd:0.05,amp:3,len:1.5,turns:1}},{n:"GOLDWIND",c:["#FFD98F","#FFF0C9","#E8B45F"],f:"band",p:{n:5,spd:0.02,amp:7,len:1,turns:1}},{n:"MONDGÜRTEL",c:["#EAF2FF","#FFFDF4","#BFD4F0"],f:"band",p:{n:10,spd:0.04,amp:4,len:0.8,turns:1}},{n:"NACHTPASSAT",c:["#AFC2F0","#E6ECFF","#8FA3E8"],f:"band",p:{n:7,spd:0.06,amp:6,len:1.4,turns:1}},{n:"EISATEM",c:["#B8F0FF","#F0FCFF","#7FD4F2"],f:"wirbel",p:{n:6,spd:0.03,amp:4,len:0.6,turns:2}},{n:"RAUREIFWIRBEL",c:["#DCEBFA","#FBFDFF","#A8C8E8"],f:"wirbel",p:{n:4,spd:0.05,amp:6,len:0.9,turns:3}},{n:"ABENDKUPFER",c:["#E8A87C","#FFD9B8","#C97F52"],f:"wirbel",p:{n:8,spd:0.02,amp:5,len:0.7,turns:1}},{n:"FROSTSPINDEL",c:["#9FD4F0","#E2F4FF","#78AEDC"],f:"wirbel",p:{n:5,spd:0.07,amp:3,len:1.1,turns:2}},{n:"MINZWIRBEL",c:["#A8EFD4","#E0FBF0","#7CD9B4"],f:"wirbel",p:{n:7,spd:0.04,amp:8,len:0.8,turns:3}},{n:"FROSTFEDER",c:["#D4E8FF","#F6FAFF","#9FBEE6"],f:"feder",p:{n:6,spd:0.04,amp:8,len:1,turns:1}},{n:"ROSENBRISE",c:["#FFB8CC","#FFE4EE","#F08FB0"],f:"feder",p:{n:4,spd:0.03,amp:10,len:0.7,turns:1}},{n:"FIRNWEHEN",c:["#EFF6FF","#FDFEFA","#C2D8F2"],f:"feder",p:{n:9,spd:0.06,amp:5,len:1.3,turns:1}},{n:"ZEPHIRSTRÄHNE",c:["#AFE4FA","#EAF9FF","#84C6EC"],f:"feder",p:{n:5,spd:0.08,amp:6,len:0.9,turns:1}},{n:"STERNENHAUCH",c:["#F4EFFF","#FFFCF0","#CFC2F0"],f:"feder",p:{n:7,spd:0.02,amp:12,len:1.5,turns:1}},{n:"FLIEDERHAUCH",c:["#D9BAFF","#F0E2FF","#B48CEC"],f:"fahne",p:{n:5,spd:0.03,amp:7,len:0.8,turns:1}},{n:"NEBELFAHNE",c:["#DCE6F5","#F8FBFF","#AAC2E0"],f:"fahne",p:{n:6,spd:0.05,amp:5,len:1.2,turns:1}},{n:"POLARWIMPEL",c:["#9FDCF5","#DEF5FF","#70B4DC"],f:"fahne",p:{n:8,spd:0.07,amp:9,len:0.6,turns:1}},{n:"GLETSCHERFAHNE",c:["#C2F0F8","#EDFCFE","#8CD2DC"],f:"fahne",p:{n:4,spd:0.02,amp:12,len:1.4,turns:1}},{n:"MONDWIMPEL",c:["#E8EEFB","#FFFEF6","#BCCAEE"],f:"fahne",p:{n:10,spd:0.04,amp:4,len:1,turns:1}},{n:"WOLKENSCHLEIER",c:["#E4EEFA","#FAFCFF","#B4CCEA"],f:"schleier",p:{n:7,spd:0.02,amp:10,len:1.5,turns:1}},{n:"LINDSCHLEIER",c:["#C8F2A8","#E9FCD6","#9CDE78"],f:"schleier",p:{n:5,spd:0.04,amp:6,len:1,turns:1}},{n:"EISVORHANG",c:["#A8E6FF","#E4F8FF","#7CC4F0"],f:"schleier",p:{n:9,spd:0.03,amp:12,len:1.2,turns:1}},{n:"PERLMUTTFLOR",c:["#F6E9F4","#FFF8EC","#D2BCE4"],f:"schleier",p:{n:6,spd:0.06,amp:8,len:0.7,turns:1}}],liebe:[{n:"STILLFUNKE",c:["#FFC2D4","#FFE3EC","#FFD9A8"],f:"stern",p:{rays:5,size:3.5,wob:0.15,alt:40,threads:1,tstyle:0,reach:0.4,pulse:0.1}},{n:"HERZGLIMMEN",c:["#FFA8C2","#FFE3ED","#FFD9A8"],f:"herz",p:{rays:0,size:4.2,wob:0.2,alt:48,threads:2,tstyle:1,reach:0.5,pulse:0.12}},{n:"SCHIMMERBAND",c:["#FFB8C9","#FFE0E8","#FFEFC4"],f:"ring",p:{rays:0,size:4,wob:0.2,alt:50,threads:2,tstyle:0,reach:0.5,pulse:0.11}},{n:"FUNKENKUSS",c:["#FF9EBF","#FFDDE8","#FFE9A8"],f:"doppel",p:{rays:2,size:4,wob:0.3,alt:58,threads:2,tstyle:0,reach:0.6,pulse:0.14}},{n:"ZARTGLUT",c:["#FFB3A8","#FFDFD6","#FFE9B8"],f:"komet",p:{rays:0,size:3.8,wob:0.22,alt:52,threads:1,tstyle:0,reach:0.45,pulse:0.13}},{n:"ROSENHAUCH",c:["#FFB3D1","#FFE0EE","#FFF0D1"],f:"bluete",p:{rays:5,size:3.2,wob:0.2,alt:42,threads:1,tstyle:0,reach:0.4,pulse:0.14}},{n:"TRAUMSTRAHL",c:["#FF9EC4","#FFCFE3","#C9A8FF"],f:"stern",p:{rays:8,size:5,wob:0.3,alt:70,threads:3,tstyle:2,reach:0.7,pulse:0.16}},{n:"NACHTROSE",c:["#C7A8F7","#E8DBFF","#FFB8D9"],f:"herz",p:{rays:0,size:5.4,wob:0.14,alt:68,threads:3,tstyle:0,reach:0.68,pulse:0.09}},{n:"SEELENREIF",c:["#F5E3B3","#FFF8E8","#FFB3D9"],f:"ring",p:{rays:0,size:5.5,wob:0.12,alt:75,threads:3,tstyle:1,reach:0.75,pulse:0.09}},{n:"ZARTMINNE",c:["#A8F2CE","#DFFCEF","#FFF3C4"],f:"doppel",p:{rays:0,size:3.4,wob:0.18,alt:44,threads:1,tstyle:1,reach:0.42,pulse:0.1}},{n:"SANFTLOHE",c:["#FF9EAE","#FFD6DD","#FFEFC9"],f:"komet",p:{rays:3,size:5,wob:0.32,alt:66,threads:2,tstyle:2,reach:0.66,pulse:0.11}},{n:"LICHTGESPINST",c:["#FFEDC4","#FFF8E3","#FFB8CC"],f:"bluete",p:{rays:8,size:4.7,wob:0.14,alt:74,threads:3,tstyle:1,reach:0.74,pulse:0.09}},{n:"KORALLENKUSS",c:["#FF8F7A","#FFC4B3","#FFE0A8"],f:"stern",p:{rays:6,size:4.5,wob:0.22,alt:55,threads:2,tstyle:1,reach:0.55,pulse:0.12}},{n:"BERNSTEINHERZ",c:["#FFC26B","#FFE6BB","#FF9E88"],f:"herz",p:{rays:2,size:3.6,wob:0.28,alt:38,threads:1,tstyle:2,reach:0.38,pulse:0.15}},{n:"WEICHGLANZ",c:["#FFA8CC","#FFD6E8","#E8C9FF"],f:"ring",p:{rays:2,size:3,wob:0.35,alt:35,threads:1,tstyle:2,reach:0.35,pulse:0.18}},{n:"SCHWEBEPAAR",c:["#FFC9B3","#FFEDDD","#FFA8C4"],f:"doppel",p:{rays:3,size:5.2,wob:0.24,alt:72,threads:3,tstyle:2,reach:0.72,pulse:0.12}},{n:"HIMMELSEHNEN",c:["#9FCFFF","#D6EBFF","#FFD9E8"],f:"komet",p:{rays:1,size:4.4,wob:0.12,alt:82,threads:3,tstyle:1,reach:0.78,pulse:0.08}},{n:"SAMTSCHIMMER",c:["#F2A3B8","#FFD9E0","#D9C4FF"],f:"bluete",p:{rays:6,size:5.6,wob:0.34,alt:60,threads:2,tstyle:2,reach:0.58,pulse:0.12}},{n:"GOLDGLIMMEN",c:["#FFE9B8","#FFF6E0","#FFC2A3"],f:"stern",p:{rays:4,size:6,wob:0.1,alt:80,threads:2,tstyle:0,reach:0.65,pulse:0.08}},{n:"PERLMUTTHERZ",c:["#FFEEDD","#FFF9F0","#F2C2CE"],f:"herz",p:{rays:4,size:4.9,wob:0.16,alt:78,threads:2,tstyle:1,reach:0.62,pulse:0.1}},{n:"MONDMINNE",c:["#FFE0CC","#FFF2E3","#F2B8D6"],f:"ring",p:{rays:1,size:4.8,wob:0.25,alt:62,threads:2,tstyle:2,reach:0.6,pulse:0.13}},{n:"INNIGTANZ",c:["#F79ECB","#FFD1E8","#C4B3FF"],f:"doppel",p:{rays:1,size:4.6,wob:0.38,alt:34,threads:2,tstyle:0,reach:0.33,pulse:0.19}},{n:"WOGENLICHT",c:["#FFC4CE","#FFEBEF","#FFE9C9"],f:"komet",p:{rays:2,size:6,wob:0.26,alt:30,threads:1,tstyle:2,reach:0.3,pulse:0.17}},{n:"FADENBLÜTE",c:["#FFAEC9","#FFDCC4","#FFF2DD"],f:"bluete",p:{rays:7,size:4,wob:0.24,alt:85,threads:2,tstyle:0,reach:0.8,pulse:0.18}}]};
 
 /* ============ CANVAS ============ */
 const cv = document.getElementById('stage');
@@ -93,7 +112,7 @@ function neon(path, c, a, core = 1, glowW = 7) {
 function dot(x, y, c, a, s = 3) {
   if (a <= 0.012) return;
   ctx.fillStyle = col(c, a); ctx.fillRect(x - s / 2, y - s / 2, s, s);
-  ctx.fillStyle = col(WHITE, a * .9); ctx.fillRect(x - .5, y - .5, 1, 1);
+  ctx.fillStyle = col(WHITE, Math.min(1, a * .9)); ctx.fillRect(x - .5, y - .5, 1, 1);
 }
 function line(x1, y1, x2, y2) { const p = new Path2D(); p.moveTo(x1, y1); p.lineTo(x2, y2); return p; }
 function poly(pts, close) { const p = new Path2D(); p.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) p.lineTo(pts[i][0], pts[i][1]); if (close) p.closePath(); return p; }
@@ -107,81 +126,136 @@ function txt(str, x, y, px, c, a, align = 'center', spaced = 0) {
 }
 const spos = (phi, alt = 0) => [CX + (R + alt) * Math.cos(phi), CY + (R + alt) * Math.sin(phi)];
 const angDiff = (a, b) => { let d = (a - b) % (Math.PI * 2); if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; return d; };
+const norm2pi = a => { a %= Math.PI * 2; if (a < 0) a += Math.PI * 2; return a; };
 
 /* ============ ZUSTAND ============ */
 const S = {
   started: false, sel: 0, om: 0, worldT: 0, harmony: 0,
-  ents: [], saveT: 20, lastPlant: -9,
+  ents: [], labels: [], saveT: 20, lastPlant: -9, lastV: {},
   run: 1 + (performance.now() | 0) % 99991,
 };
 
-/* ============ AUDIO ============ */
+/* ============ SYMPHONIE — der Planet als Spieluhr ============
+   Alles rastet auf ein 16tel-Raster (nie aus dem Takt) und spielt ausschließlich
+   Pentatonik über einer konsonanten Akkordfolge (nie dissonant). Tonart, Tempo
+   und Folge werden pro Session gewürfelt: jede Sitzung ist eine eigene Aufführung.
+   Der Winkel einer Schöpfung ist ihr Platz im Takt, links/rechts wird zum Panorama,
+   das Element zur Stimme, die Variante zur Tonhöhe. */
 const AU = {
-  ctx: null, on: CFG.audio, master: null, comp: null, pad: [], chimeBus: null,
-  root: 110, swayI: 0, nextSway: 0, timer: null, lastSpawn: -9, loveG: null,
+  ctx: null, on: CFG.audio, master: null, comp: null, pad: [], chimeBus: null, loveG: null,
+  timer: null, lastSpawn: -9,
+  key: 110, minor: 1, bpm: 52, prog: [0, 8, 3, 10], pent: [0, 3, 5, 7, 10],
+  stepDur: 0, steps: 64, loopDur: 0, loopStart: 0, nextStep: 0, chordI: 0,
   init() {
     if (this.ctx) return;
     try {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       const c = this.ctx = new AC();
+      const Rn = mulberry(S.run * 7 + 3);
+      this.key = [98, 103.83, 110, 116.54, 123.47, 130.81][(Rn() * 6) | 0];
+      this.minor = Rn() < .55 ? 1 : 0;
+      this.bpm = 48 + Rn() * 10;
+      this.prog = this.minor ? [[0, 8, 3, 10], [0, 5, 8, 10], [0, 3, 8, 7]][(Rn() * 3) | 0]
+                             : [[0, 5, 9, 7], [0, 9, 5, 7], [0, 4, 5, 7]][(Rn() * 3) | 0];
+      this.pent = this.minor ? [0, 3, 5, 7, 10] : [0, 2, 4, 7, 9];
+      this.stepDur = 60 / this.bpm / 4; this.loopDur = this.stepDur * this.steps;
       const comp = this.comp = c.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 5;
       this.master = c.createGain(); this.master.gain.value = this.on ? CFG.volume : 0;
       comp.connect(this.master).connect(c.destination);
       const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 400; lp.Q.value = .6;
       const padG = c.createGain(); padG.gain.value = 0; lp.connect(padG).connect(comp);
-      padG.gain.linearRampToValueAtTime(0.065, c.currentTime + 8);
+      padG.gain.linearRampToValueAtTime(0.06, c.currentTime + 8);
       const lfo = c.createOscillator(); lfo.frequency.value = .04;
-      const lfoG = c.createGain(); lfoG.gain.value = 120; lfo.connect(lfoG).connect(lp.frequency); lfo.start();
-      const mk = (type, mult, g) => { const o = c.createOscillator(); o.type = type; o.frequency.value = this.root * mult; const og = c.createGain(); og.gain.value = g; o.connect(og).connect(lp); o.start(); this.pad.push({ o, mult }); };
+      const lfoG = c.createGain(); lfoG.gain.value = 110; lfo.connect(lfoG).connect(lp.frequency); lfo.start();
+      const mk = (type, mult, g) => { const o = c.createOscillator(); o.type = type; o.frequency.value = this.key * mult; const og = c.createGain(); og.gain.value = g; o.connect(og).connect(lp); o.start(); this.pad.push({ o, mult }); };
       mk('sawtooth', 1, .26); mk('sawtooth', 1.004, .26); mk('triangle', 1.5, .13); mk('sine', 2, .09);
-      // Liebes-Stimme: große Terz, schwillt mit der Harmonie
-      const lo = c.createOscillator(); lo.type = 'sine'; lo.frequency.value = this.root * 2.5;
+      const lo = c.createOscillator(); lo.type = 'sine'; lo.frequency.value = this.key * (this.minor ? 2.4 : 2.5);
       this.loveG = c.createGain(); this.loveG.gain.value = 0; lo.connect(this.loveG).connect(comp); lo.start();
       this.chimeBus = c.createGain(); this.chimeBus.gain.value = .55; this.chimeBus.connect(comp);
-      const dl = c.createDelay(1); dl.delayTime.value = .38;
-      const fb = c.createGain(); fb.gain.value = .3; const mix = c.createGain(); mix.gain.value = .4;
+      const dl = c.createDelay(1); dl.delayTime.value = this.stepDur * 3;
+      const fb = c.createGain(); fb.gain.value = .28; const mix = c.createGain(); mix.gain.value = .38;
       this.chimeBus.connect(dl); dl.connect(fb).connect(dl); dl.connect(mix).connect(comp);
-      this.nextSway = c.currentTime + 22;
-      this.timer = setInterval(() => this.tick(), 400);
+      this.loopStart = c.currentTime + .2; this.nextStep = 0;
+      this.timer = setInterval(() => this.tick(), 110);
     } catch (err) { /* Ton ist optional */ }
   },
+  loopPos(now) { // 0..1 — Stellung des Taktlichts
+    if (this.ctx && this.ctx.state === 'running') { const p = (this.ctx.currentTime - this.loopStart) / this.loopDur; return p - Math.floor(p); }
+    const p = S.worldT / 18; return p - Math.floor(p);
+  },
+  chordRoot() { return this.key * Math.pow(2, this.prog[this.chordI] / 12); },
+  degFreq(deg, oct) { const p = this.pent[((deg % 5) + 5) % 5]; return this.key * Math.pow(2, p / 12) * Math.pow(2, oct); },
   tick() {
     const c = this.ctx; if (!c || c.state !== 'running') return;
-    if (c.currentTime > this.nextSway) {
-      this.swayI ^= 1;
-      const root = this.root * (this.swayI ? 8 / 9 : 1);
-      for (const v of this.pad) v.o.frequency.setTargetAtTime(root * v.mult, c.currentTime, 3);
-      this.nextSway = c.currentTime + 22;
-    }
     this.loveG.gain.setTargetAtTime(S.harmony * .02, c.currentTime, 2);
+    const now = c.currentTime;
+    while (this.loopStart + this.nextStep * this.stepDur < now + .5) {
+      const t0 = this.loopStart + this.nextStep * this.stepDur;
+      const sIn = this.nextStep % this.steps;
+      if (sIn % 16 === 0) { // Akkordwechsel je Takt — der Teppich gleitet mit
+        this.chordI = (sIn / 16) | 0;
+        const root = this.chordRoot();
+        for (const v of this.pad) v.o.frequency.setTargetAtTime(root * v.mult, t0, 1.6);
+      }
+      if (this.on && t0 > now - .05) this.playStep(sIn, t0);
+      this.nextStep++;
+    }
   },
-  env(freq, type, g, att, tau, dest) {
-    const c = this.ctx, t = c.currentTime;
-    const gn = c.createGain(); gn.gain.value = 0; gn.connect(dest || this.comp);
-    gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(g, t + att); gn.gain.setTargetAtTime(0, t + att + .02, tau);
+  playStep(sIn, t0) { // welche Schöpfungen liegen in diesem 16tel-Fenster?
+    const a0 = sIn / this.steps * Math.PI * 2, a1 = (sIn + 1) / this.steps * Math.PI * 2;
+    let played = 0;
+    for (const e of S.ents) {
+      if (e.dying || played >= 2) continue;
+      if (e.kind === 'wind' && (e.V.f === 'band' || e.V.f === 'feder')) continue; // freie Strömungen wehen nur
+      const phi = e.a + S.om;
+      const rel = norm2pi(phi + Math.PI / 2);
+      if (rel < a0 || rel >= a1) continue;
+      const [sx] = spos(phi); if (sx < -60 || sx > W + 60) continue;
+      const pan = clamp((sx - W / 2) / (W / 2), -1, 1) * .5;
+      this.voice(e, t0, pan); played++;
+      e.glintT = S.worldT + Math.max(0, t0 - this.ctx.currentTime);
+    }
+  },
+  out(pan) { const p = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null; if (p) { p.pan.value = pan; p.connect(this.comp); return p; } return this.comp; },
+  note(freq, type, g, att, tau, t0, dest) {
+    const c = this.ctx;
+    const gn = c.createGain(); gn.gain.value = 0; gn.connect(dest);
+    gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(g, t0 + att); gn.gain.setTargetAtTime(0, t0 + att + .02, tau);
     const o = c.createOscillator(); o.type = type; o.frequency.value = freq; o.connect(gn);
-    o.start(t); o.stop(t + att + tau * 6);
+    o.start(t0); o.stop(t0 + att + tau * 6);
   },
-  noise(f, q, g, att, tau) {
-    const c = this.ctx, t = c.currentTime;
+  noiseAt(f, q, g, att, tau, t0, dest) {
+    const c = this.ctx;
     const nb = c.createBuffer(1, c.sampleRate, c.sampleRate); const d = nb.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     const src = c.createBufferSource(); src.buffer = nb;
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
     const gn = c.createGain(); gn.gain.value = 0;
-    src.connect(bp).connect(gn).connect(this.comp);
-    gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(g, t + att); gn.gain.setTargetAtTime(0, t + att, tau);
-    src.start(t); src.stop(t + att + tau * 6);
+    src.connect(bp).connect(gn).connect(dest);
+    gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(g, t0 + att); gn.gain.setTargetAtTime(0, t0 + att, tau);
+    src.start(t0); src.stop(t0 + att + tau * 6);
   },
-  spawn(kind) { // jedes Element hat seine eigene Stimme — weich, nie hektisch
+  voice(e, t0, pan) { // die Stimme einer Schöpfung — Tonhöhe aus ihrer Variante
+    const deg = (e.v * 7 + (e.seed >>> 8)) % 5;
+    const warm = 1 + .3 * S.harmony;
+    const dest = this.out(pan);
+    if (e.kind === 'erde') { const f = this.degFreq(deg, e.v % 2); this.note(f, 'triangle', .05 * warm, .008, .3, t0, dest); this.note(f * 2, 'sine', .02, .008, .2, t0, dest); }
+    else if (e.kind === 'wasser') { const f = this.degFreq(deg, 1 + (e.v % 2)); this.note(f, 'sine', .04 * warm, .01, 1.2, t0, this.chimeBus); this.note(f * 3, 'sine', .012, .01, .8, t0, this.chimeBus); }
+    else if (e.kind === 'feuer') { this.note(this.chordRoot() / 2, 'sine', .07, .012, .28, t0, dest); this.noiseAt(300, .8, .012, .02, .12, t0, dest); }
+    else if (e.kind === 'wind') { this.noiseAt(420 + e.alt * 3, .7, .02, .5, 1, t0, dest); }
+    else if (e.kind === 'liebe') { const f1 = this.degFreq(deg, 1), f2 = this.degFreq(deg + 2, 1); this.note(f1, 'sine', .035 * warm, .18, 1.6, t0, this.chimeBus); this.note(f2, 'sine', .03 * warm, .22, 1.6, t0, this.chimeBus); }
+  },
+  spawn(kind, e) { // Erschaffungsklang — aufs nächste 16tel gerastert, damit nichts stolpert
     const c = this.ctx; if (!c || !this.on || c.state !== 'running') return;
-    if (c.currentTime - this.lastSpawn < .3) return; this.lastSpawn = c.currentTime;
-    const r = this.root;
-    if (kind === 'erde') { this.env(r * 2 * [1, 1.2, 1.5][(Math.random() * 3) | 0], 'sine', .07, .03, .5); this.env(r, 'triangle', .04, .04, .7); }
-    else if (kind === 'feuer') { this.env(r * .71, 'sine', .09, .012, .3); this.noise(340, .8, .02, .02, .18); }
-    else if (kind === 'wasser') { const f = [523.25, 587.33, 659.25, 783.99][(Math.random() * 4) | 0]; this.env(f, 'sine', .05, .012, 1.3, this.chimeBus); this.env(f * 2.01, 'sine', .015, .012, .9, this.chimeBus); }
-    else if (kind === 'wind') this.noise(760, .6, .028, .4, .9);
-    else if (kind === 'liebe') { this.env(r * 2.5, 'sine', .04, .12, 1.3, this.chimeBus); this.env(r * 3, 'sine', .035, .16, 1.3, this.chimeBus); }
+    if (c.currentTime - this.lastSpawn < .25) return; this.lastSpawn = c.currentTime;
+    const k = Math.ceil((c.currentTime + .03 - this.loopStart) / this.stepDur);
+    const t0 = this.loopStart + k * this.stepDur;
+    const deg = e ? (e.v * 7 + (e.seed >>> 8)) % 5 : 0;
+    if (kind === 'erde') { this.note(this.degFreq(deg, 1), 'sine', .06, .03, .5, t0, this.comp); this.note(this.key, 'triangle', .035, .04, .7, t0, this.comp); }
+    else if (kind === 'feuer') { this.note(this.chordRoot() / 2, 'sine', .08, .012, .3, t0, this.comp); this.noiseAt(340, .8, .018, .02, .18, t0, this.comp); }
+    else if (kind === 'wasser') { const f = this.degFreq(deg, 2); this.note(f, 'sine', .045, .012, 1.3, t0, this.chimeBus); this.note(f * 2, 'sine', .014, .012, .9, t0, this.chimeBus); }
+    else if (kind === 'wind') this.noiseAt(760, .6, .026, .4, .9, t0, this.comp);
+    else if (kind === 'liebe') { this.note(this.degFreq(deg, 1), 'sine', .038, .12, 1.3, t0, this.chimeBus); this.note(this.degFreq(deg + 2, 1), 'sine', .032, .16, 1.3, t0, this.chimeBus); }
   },
   toggle() { this.on = !this.on; if (!this.ctx && this.on) this.init(); if (this.ctx) this.master.gain.setTargetAtTime(this.on ? CFG.volume : 0, this.ctx.currentTime, .2); this.resume(); },
   resume() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {}); },
@@ -193,26 +267,40 @@ const stars = []; for (let i = 0; i < 150; i++) stars.push({ x: hash(i * 3 + 1),
 const wisps = [0, 1, 2].map(i => ({ x: hash(i * 11 + 4), y: hash(i * 11 + 5) * .5, r: 120 + hash(i * 11 + 6) * 220, ph: hash(i * 11 + 7) * 6.3, a0: hash(i * 11 + 8) * 6.3 }));
 let shoot = null, shootT = 30;
 
-/* ============ WESEN (Entities) ============ */
-function makeEnt(kind, a, seed, alt = 0, mature = false) {
-  const Rn = mulberry(seed);
+/* ============ WESEN ============ */
+function pickV(kind) {
+  const lib = VAR[kind], n = lib.length;
+  let v = (Math.random() * n) | 0;
+  if (n > 1 && v === S.lastV[kind]) v = (v + 1 + ((Math.random() * (n - 1)) | 0)) % n;
+  S.lastV[kind] = v; return v;
+}
+function makeEnt(kind, a, seed, alt = 0, mature = false, v = 0) {
+  const lib = VAR[kind]; v = ((v % lib.length) + lib.length) % lib.length;
+  const V = lib[v], P = V.p, Rn = mulberry(seed);
   const e = {
-    kind, a, seed, alt, R: Rn, born: mature ? S.worldT - 60 : S.worldT,
-    ph: Rn() * 6.3, sc: .75 + Rn() * .5, children: 0, dying: 0,
+    kind, a, seed, alt, v, V, C: V.c.map(hex), R: Rn, born: mature ? S.worldT - 60 : S.worldT,
+    ph: Rn() * 6.3, sc: .8 + Rn() * .4, children: 0, dying: 0, glintT: -9,
     parts: [], rings: [], drops: [], pt: 0, rt: 0, dtm: 0,
   };
-  if (kind === 'erde') e.tree = buildTree(Rn, 5);
-  if (kind === 'wind') { e.spd = (.035 + Rn() * .03) * (Rn() < .5 ? 1 : -1); e.n = 8; }
+  if (kind === 'erde') {
+    if (V.f === 'baum') e.tree = buildTree(Rn, clamp(Math.round(P.depth || 5), 3, 6), clamp(P.spread ?? .6, .2, 1.1));
+    if (V.f === 'kristall') { e.shards = []; const n = clamp(Math.round(P.shards || 5), 2, 8); for (let i = 0; i < n; i++) e.shards.push({ an: (i / (n - 1 || 1) - .5) * 2 * (P.spread ?? .6), h: (P.height || 24) * (.6 + Rn() * .6), w: 3.5 + Rn() * 4, ph: Rn() * 6.3, d: Rn() }); }
+    if (V.f === 'pilz') { e.caps = []; const n = clamp(Math.round(P.caps || 1), 1, 3); for (let i = 0; i < n; i++) e.caps.push({ x: i === 0 ? 0 : (Rn() - .5) * 34, s: i === 0 ? 1 : .45 + Rn() * .35, ph: Rn() * 6.3 }); }
+    if (V.f === 'blume') { e.heads = []; const n = clamp(Math.round(P.heads || 1), 1, 3); for (let i = 0; i < n; i++) e.heads.push({ x: i === 0 ? 0 : (Rn() - .5) * 42, s: i === 0 ? 1 : .5 + Rn() * .3, ph: Rn() * 6.3 }); }
+    if (V.f === 'farn') { e.fr = []; const n = clamp(Math.round(P.fronds || 2), 1, 3); for (let i = 0; i < n; i++) e.fr.push({ x: (i - (n - 1) / 2) * 22, s: (i === ((n / 2) | 0) ? 1 : .55 + Rn() * .3) * (P.size ?? 1), dir: Rn() < .5 ? 1 : -1, ph: Rn() * 6.3, off: i * 2 }); }
+    if (V.f === 'gras' || V.f === 'kaktus') { /* rein parametrisch */ }
+  }
+  if (kind === 'wind') { e.spd = (P.spd ?? .05) * (Rn() < .5 ? 1 : -1); e.n = clamp(Math.round(P.n || 8), 3, 12); }
   return e;
 }
-function buildTree(Rn, dm) {
+function buildTree(Rn, dm, spread) {
   function build(depth) {
     const kids = [];
     if (depth < dm) {
       const n = depth === 0 ? 2 : (Rn() < .72 ? 2 : Rn() < .5 ? 1 : 3);
       for (let i = 0; i < n; i++) {
         const k = build(depth + 1);
-        k.da = (i - (n - 1) / 2) * .62 * (.6 + Rn() * .4) + (Rn() - .5) * .14;
+        k.da = (i - (n - 1) / 2) * spread * (.9 + Rn() * .5) + (Rn() - .5) * .2 * spread;
         kids.push(k);
       }
     }
@@ -220,31 +308,34 @@ function buildTree(Rn, dm) {
   }
   return build(0);
 }
-function plant(kind, a, alt = 0) {
+function plant(kind, a, alt = 0, forceV = -1) {
   if (S.ents.filter(e => !e.dying).length >= CFG.maxEnts) {
     const old = S.ents.find(e => !e.dying && e.kind !== 'liebe') || S.ents.find(e => !e.dying);
     if (old) old.dying = S.worldT;
   }
-  const e = makeEnt(kind, a, (Math.imul(S.ents.length + 13, 2654435761) ^ S.run ^ ((S.worldT * 997) | 0)) >>> 0, alt);
-  S.ents.push(e); AU.spawn(kind); save();
+  const v = forceV >= 0 ? forceV : pickV(kind);
+  const e = makeEnt(kind, a, (Math.imul(S.ents.length + 13, 2654435761) ^ S.run ^ ((S.worldT * 997) | 0)) >>> 0, alt, false, v);
+  S.ents.push(e); AU.spawn(kind, e); save();
+  S.labels.push({ a, alt: kind === 'wind' || kind === 'liebe' ? alt + 40 : 60, text: ELEMENTS.find(x => x.k === kind).n + ' · ' + e.V.n.toUpperCase(), t0: S.worldT, c: e.C[0] });
+  if (S.labels.length > 4) S.labels.shift();
   return e;
 }
 
-/* Speicherung — deine Welt bleibt bestehen (wenn der Browser es erlaubt) */
-const KEY = 'neon5_welt_v1';
+/* Speicherung — deine Welt bleibt; jede Session spielt sie neu */
+const KEY = 'neon5_welt_v2';
 function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify({
       om: S.om,
-      e: S.ents.filter(e => !e.dying).map(e => ({ k: e.kind, a: +e.a.toFixed(4), s: e.seed, h: e.alt })),
+      e: S.ents.filter(e => !e.dying).map(e => ({ k: e.kind, a: +e.a.toFixed(4), s: e.seed, h: e.alt, v: e.v })),
     }));
   } catch (err) { /* privater Modus o.ä. */ }
 }
 function loadWorld() {
   try {
-    const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (!d || !d.e) return;
+    const d = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('neon5_welt_v1') || 'null'); if (!d || !d.e) return;
     S.om = d.om || 0;
-    for (const r of d.e.slice(0, CFG.maxEnts)) S.ents.push(makeEnt(r.k, r.a, r.s, r.h || 0, true));
+    for (const r of d.e.slice(0, CFG.maxEnts)) S.ents.push(makeEnt(r.k, r.a, r.s, r.h || 0, true, r.v || 0));
   } catch (err) { /* dann eben eine frische Welt */ }
 }
 loadWorld();
@@ -261,29 +352,42 @@ function update(dt) {
   }
   const alive = S.ents.filter(e => !e.dying).length;
   for (const e of S.ents) {
-    const age = S.worldT - e.born;
+    const age = S.worldT - e.born, P = e.V.p;
     if (e.kind === 'feuer') {
+      const rate = clamp(P.embers ?? 1, .2, 2.2);
       e.pt -= dt;
-      if (e.pt <= 0 && e.parts.length < 12) { e.pt = .45 + e.R() * .45; e.parts.push({ u: (e.R() - .5) * 10, v: 14 + e.R() * 12, ph: e.R() * 6.3, life: 4 + e.R() * 2, t: 0 }); }
+      if (e.pt <= 0 && e.parts.length < 6 + rate * 5) { e.pt = (.9 - rate * .3) + e.R() * .4; e.parts.push({ u: (e.R() - .5) * 10, v: 12 + e.R() * 12, ph: e.R() * 6.3, life: 4 + e.R() * 2, t: 0 }); }
       for (let i = e.parts.length - 1; i >= 0; i--) { const p = e.parts[i]; p.t += dt; if (p.t > p.life) e.parts.splice(i, 1); }
     }
     if (e.kind === 'wasser') {
+      const burst = P.period > 0 ? ((age % P.period) < 1.6 ? 1 : 0) : 1;
       e.rt -= dt;
-      if (e.rt <= 0 && e.rings.length < 4) { e.rt = 2.6 + e.R() * 1.4; e.rings.push({ t: 0 }); }
-      for (let i = e.rings.length - 1; i >= 0; i--) { const r = e.rings[i]; r.t += dt; if (r.t > 8) e.rings.splice(i, 1); }
+      if (e.rt <= 0 && e.rings.length < clamp(Math.round(P.rings ?? 2), 0, 5)) { e.rt = 2.4 + e.R() * 1.6; e.rings.push({ t: 0 }); }
+      for (let i = e.rings.length - 1; i >= 0; i--) { const r = e.rings[i]; r.t += dt * clamp(P.ringspd ?? 1, .4, 1.6); if (r.t > 8) e.rings.splice(i, 1); }
       e.dtm -= dt;
-      if (e.dtm <= 0 && e.drops.length < 8) { e.dtm = .4 + e.R() * .3; e.drops.push({ x: 0, y: 0, vx: (e.R() - .5) * 36, vy: -(26 + e.R() * 26), t: 0 }); }
+      const maxd = clamp(Math.round(P.drops ?? 6), 0, 12);
+      if (e.dtm <= 0 && e.drops.length < maxd && (P.period === 0 || burst)) {
+        e.dtm = (P.period > 0 ? .1 : .24) + e.R() * .22;
+        const sym = e.V.f === 'brunnen' ? (e.drops.length % 2 ? 1 : -1) : (e.R() < .5 ? -1 : 1);
+        e.drops.push({ x: 0, y: 0, vx: sym * (P.dvx ?? 26) * (.5 + e.R() * .7), vy: -(P.dvy ?? 38) * (.6 + e.R() * .6) * (P.period > 0 ? 1.35 : 1), t: 0 });
+      }
       for (let i = e.drops.length - 1; i >= 0; i--) { const p = e.drops[i]; p.t += dt; p.vy += 52 * dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.y > 3) e.drops.splice(i, 1); }
+      if (P.mist) {
+        e.pt -= dt;
+        if (e.pt <= 0 && e.parts.length < 13) { e.pt = .5 + e.R() * .5; e.parts.push({ u: (e.R() - .5) * (P.pool ? P.pool * 2.2 : 28), v: 5 + e.R() * 6, ph: e.R() * 6.3, life: 6 + e.R() * 3, t: 0 }); }
+        for (let i = e.parts.length - 1; i >= 0; i--) { const p = e.parts[i]; p.t += dt; if (p.t > p.life) e.parts.splice(i, 1); }
+      }
     }
-    if (e.kind === 'erde' && age > 26 && e.children < 2 && alive < CFG.maxEnts - 2 && !e.dying) {
-      if (Math.random() < dt * .012) { e.children++; plant('erde', e.a + (Math.random() - .5) * .14); } // die Welt sät sich selbst
+    if (e.kind === 'erde' && e.V.f === 'baum' && age > 26 && e.children < 2 && alive < CFG.maxEnts - 2 && !e.dying) {
+      if (Math.random() < dt * .012) { e.children++; plant('erde', e.a + (Math.random() - .5) * .14, 0, e.v); } // die Welt sät sich selbst
     }
   }
   S.ents = S.ents.filter(e => !e.dying || S.worldT - e.dying < 6);
+  S.labels = S.labels.filter(l => S.worldT - l.t0 < 3.6);
   S.saveT -= dt; if (S.saveT <= 0) { S.saveT = 20; save(); }
 }
 
-/* ============ ZEICHNEN ============ */
+/* ============ ZEICHNEN: HIMMEL & PLANET ============ */
 function drawSky() {
   const drift = S.om * R * .12;
   for (const s of stars) {
@@ -294,7 +398,7 @@ function drawSky() {
     ctx.fillStyle = s.acc ? col(PAL.liebe[0], a) : col(WHITE, a);
     ctx.fillRect(x, y, 1.4, 1.4);
   }
-  for (const wsp of wisps) { // ferne Nebel, kaum mehr als eine Ahnung
+  for (const wsp of wisps) {
     const a = .028 + .014 * Math.sin(S.worldT * .05 * RM + wsp.ph);
     const p = new Path2D(); p.arc(wsp.x * W, wsp.y * H, wsp.r, wsp.a0, wsp.a0 + 2.2);
     ctx.strokeStyle = col(mixc(RIMC, PAL.liebe[0], .5), a); ctx.lineWidth = 26; ctx.stroke(p);
@@ -312,120 +416,389 @@ function drawPlanet() {
   neon(rim, RIMC, .5, .6, 8);
   const atmo = new Path2D(); atmo.arc(CX, CY, R + 7, c0 - ARC, c0 + ARC);
   neon(atmo, RIMC, .1, 0, 6);
-  if (S.harmony > .01) { // Liebesschein
+  if (S.harmony > .01) {
     for (const [off, aa] of [[16, .09], [30, .045]]) {
       const halo = new Path2D(); halo.arc(CX, CY, R + off, c0 - ARC, c0 + ARC);
       neon(halo, PAL.liebe[0], aa * S.harmony, 0, 9);
     }
   }
 }
+function drawTaktlicht() { // das umlaufende Licht der Spieluhr
+  const pos = AU.loopPos(), phi = -Math.PI / 2 + pos * Math.PI * 2;
+  for (let k = 4; k >= 0; k--) {
+    const pk = phi - k * .018, [x, y] = spos(pk, 4);
+    if (x < -30 || x > W + 30 || y > H + 30) continue;
+    const a = (k === 0 ? .6 : .3 * (1 - k / 5));
+    dot(x, y, k === 0 ? WHITE : mixc(WHITE, PAL.liebe[1], .5), a, k === 0 ? 3 : 2);
+  }
+}
 function entAlpha(e) {
   const inA = sm(clamp((S.worldT - e.born) / 2, 0, 1));
-  return e.dying ? inA * clamp(1 - (S.worldT - e.dying) / 6, 0, 1) : inA;
+  const base = e.dying ? inA * clamp(1 - (S.worldT - e.dying) / 6, 0, 1) : inA;
+  const g = clamp(1 - (S.worldT - e.glintT) / .8, 0, 1); // Aufleuchten, wenn das Taktlicht die Stimme spielt
+  return base * (1 + .3 * sm(g));
 }
 function visible(phi) { const [x, y] = spos(phi); return x > -170 && x < W + 170 && y < H + 90; }
 
-function drawTreeNode(nd, x, y, ang, depth, segLen, e, growPer) {
+/* ============ ZEICHNEN: ERDE (7 Formen) ============ */
+function drawTreeNode(nd, x, y, ang, depth, segLen, e, growPer, dm) {
+  const P = e.V.p;
   const lt = S.worldT - e.born - depth * growPer; if (lt <= 0) return;
   const g = sm(Math.min(1, lt / growPer));
-  const a2 = ang + nd.da + Math.sin(S.worldT * .35 * RM + nd.ph + depth * .8) * .035 * (depth / 5);
+  let a2 = ang + nd.da;
+  if (P.droop) a2 = lerp(a2, Math.PI / 2, clamp(P.droop, 0, 1) * (depth / dm) * .45);
+  a2 += Math.sin(S.worldT * .35 * RM + nd.ph + depth * .8) * .035 * (depth / dm);
   const L = segLen * nd.len * g;
   const x2 = x + Math.cos(a2) * L, y2 = y + Math.sin(a2) * L;
   const al = entAlpha(e);
-  neon(line(x, y, x2, y2), PAL.erde[0], (.75 - depth * .08) * al, depth < 2 ? .6 : .2, 5);
+  neon(line(x, y, x2, y2), e.C[0], (.75 - depth * .08) * al, depth < 2 ? .6 : .2, 5);
   if (g >= 1) {
-    for (const k of nd.kids) drawTreeNode(k, x2, y2, a2, depth + 1, segLen * .74, e, growPer);
+    for (const k of nd.kids) drawTreeNode(k, x2, y2, a2, depth + 1, segLen * .74, e, growPer, dm);
+    if (P.leaf === 2 && depth >= dm - 2) dot(x2, y2, e.C[1], .4 * al, 2.5);
     if (!nd.kids.length) {
       const ab = sm(Math.min(1, (lt - growPer) / 2.5)) * al;
-      dot(x2, y2, PAL.erde[1], .5 * ab, 3);
-      if (S.harmony > .01) neon(circle(x2, y2, 2.2), mixc(PAL.liebe[0], PAL.liebe[1], nd.bl), .6 * ab * S.harmony, .6, 4); // Blüten nur, wo Liebe ist
+      if (P.leaf === 1) {
+        neon(line(x2, y2, x2 + Math.cos(a2 + .6) * 7, y2 + Math.sin(a2 + .6) * 7), e.C[1], .5 * ab, 0, 4);
+        neon(line(x2, y2, x2 + Math.cos(a2 - .6) * 7, y2 + Math.sin(a2 - .6) * 7), e.C[1], .5 * ab, 0, 4);
+      } else dot(x2, y2, e.C[1], .5 * ab, 3);
+      if (P.blossom && S.harmony > .01) neon(circle(x2, y2, 2.2), mixc(e.C[2], PAL.liebe[1], .4), .6 * ab * S.harmony, .6, 4);
     }
   }
 }
-function drawEnt(e) {
-  if (e.kind === 'liebe') return drawLove(e);
-  const phi = e.a + S.om;
-  if (e.kind === 'wind') return drawWind(e);
-  if (!visible(phi)) return;
-  const [bx, by] = spos(phi);
-  const al = entAlpha(e);
-  ctx.save(); ctx.translate(bx, by); ctx.rotate(phi + Math.PI / 2);
-  if (e.kind === 'erde') {
-    const sc = H * .085 * e.sc;
-    for (let i = 0; i < 6; i++) { // Gräser am Fuß
-      const gx = (hash(e.seed + i * 7) - .5) * 44 * e.sc;
-      const gh = (8 + hash(e.seed + i * 13) * 12) * e.sc;
-      const sway = Math.sin(S.worldT * .3 * RM + i + e.ph) * 2.5;
-      const p = new Path2D(); p.moveTo(gx, 0); p.quadraticCurveTo(gx + sway * .5, -gh * .6, gx + sway, -gh);
-      neon(p, PAL.erde[1], .3 * al, 0, 4);
+function blade(x0, gh, lean, phase, c, a) {
+  const sway = Math.sin(S.worldT * .28 * RM + phase) * 2.5 + lean * gh * .5;
+  const p = new Path2D(); p.moveTo(x0, 0); p.quadraticCurveTo(x0 + sway * .5, -gh * .6, x0 + sway, -gh);
+  neon(p, c, a, 0, 4);
+}
+function drawErde(e) {
+  const P = e.V.p, al = entAlpha(e), grow = sm(clamp((S.worldT - e.born) / CFG.grow, 0, 1));
+  const f = e.V.f, sc = e.sc;
+  if (f === 'baum') {
+    for (let i = 0; i < 6; i++) blade((hash(e.seed + i * 7) - .5) * 44 * sc, (8 + hash(e.seed + i * 13) * 12) * sc, 0, i + e.ph, e.C[1], .3 * al);
+    drawTreeNode(e.tree, 0, 0, -Math.PI / 2, 0, H * .15 * sc * clamp(P.len ?? 1, .5, 1.5), e, CFG.grow / 5, clamp(Math.round(P.depth || 5), 3, 6));
+  } else if (f === 'gras') {
+    const n = clamp(Math.round(P.blades || 14), 4, 28);
+    for (let i = 0; i < n; i++) {
+      const g = sm(clamp((grow * n - i * .6) / 3, 0, 1)); if (g <= 0) continue;
+      blade((hash(e.seed + i * 7) - .5) * 90 * sc, (30 + hash(e.seed + i * 13) * 46) * clamp(P.height ?? 1, .4, 1.8) * sc * g, P.lean ?? 0, i * .7 + e.ph, mixc(e.C[0], e.C[1], hash(e.seed + i)), .34 * al);
+      if (i % 4 === 0) dot((hash(e.seed + i * 7) - .5) * 90 * sc, -(30 + hash(e.seed + i * 13) * 46) * clamp(P.height ?? 1, .4, 1.8) * sc * g, e.C[2], .35 * al * g, 2.5);
     }
-    drawTreeNode(e.tree, 0, 0, -Math.PI / 2, 0, sc, e, CFG.grow / 5);
+  } else if (f === 'blume') {
+    for (const hd of e.heads) {
+      const stemH = clamp(P.stem ?? 40, 14, 70) * 1.7 * hd.s * sc, hr = 18 * clamp(P.head ?? 1, .4, 1.4) * hd.s * sc;
+      const g = sm(clamp((S.worldT - e.born - hd.ph * .4) / (CFG.grow * .8), 0, 1)); if (g <= 0) continue;
+      const sway = Math.sin(S.worldT * .3 * RM + hd.ph) * 3;
+      const sp = new Path2D(); sp.moveTo(hd.x, 0); sp.quadraticCurveTo(hd.x + sway * .4, -stemH * .6 * g, hd.x + sway, -stemH * g);
+      neon(sp, e.C[0], .55 * al, .2, 5);
+      const hx = hd.x + sway, hy = -stemH * g;
+      const np = clamp(Math.round(P.petals || 12), 6, 22), open = sm(clamp((g - .7) / .3, 0, 1));
+      const rot = S.worldT * .015 * RM + hd.ph;
+      for (let i = 0; i < np * open; i++) {
+        const an = i / np * Math.PI * 2 + rot;
+        const c1 = mixc(e.C[1], e.C[2], i % 2 ? .7 : .2);
+        if ((P.pstyle | 0) === 0) neon(line(hx + Math.cos(an) * hr * .45, hy + Math.sin(an) * hr * .45, hx + Math.cos(an) * hr, hy + Math.sin(an) * hr), c1, .55 * al, 0, 4);
+        else if ((P.pstyle | 0) === 1) { const pp = new Path2D(); pp.ellipse(hx + Math.cos(an) * hr * .62, hy + Math.sin(an) * hr * .62, hr * .42, hr * .17, an, 0, Math.PI * 2); neon(pp, c1, .45 * al, 0, 4); }
+        else dot(hx + Math.cos(an) * hr, hy + Math.sin(an) * hr, c1, .55 * al, 2.5);
+      }
+      dot(hx, hy, e.C[2], .7 * al * open, 3.5);
+    }
+  } else if (f === 'farn') {
+    for (const fr of e.fr) {
+      const g = sm(clamp((S.worldT - e.born - fr.off) / CFG.grow, 0, 1)); if (g <= 0) continue;
+      const M = 26, front = g * M, segL = H * .38 * fr.s * sc / M;
+      let x = fr.x, y = 0, an = -Math.PI / 2 + (P.lean ?? 0) + Math.sin(S.worldT * .3 * RM + fr.ph) * .025;
+      for (let i = 0; i < Math.min(M, front + 7); i++) {
+        const relax = clamp((front - i) / 5, 0, 1);
+        const dth = lerp(clamp(P.curl ?? .38, .2, .55) * fr.dir, .012 * fr.dir + .0005 * i, sm(relax));
+        an += dth;
+        const L = segL * (1 - i / M * .3) * clamp(front - i + 5, 0, 5) / 5;
+        const x2 = x + Math.cos(an) * L, y2 = y + Math.sin(an) * L;
+        neon(line(x, y, x2, y2), e.C[0], (.65 - i / M * .25) * al, i < 6 ? .5 : .2, 5);
+        if (i > 2 && i % 2 === 0 && relax >= 1) {
+          const ls = (1 - i / M * .8) * H * .056 * fr.s * sc;
+          const la = sm(clamp((front - i - 3) / 5, 0, 1));
+          for (const sgn of [1, -1]) {
+            const ba = an + sgn * 1.75;
+            const p2 = new Path2D(); p2.moveTo(x2, y2);
+            p2.quadraticCurveTo(x2 + Math.cos(ba) * ls * .55 * la, y2 + Math.sin(ba) * ls * .55 * la, x2 + Math.cos(ba - sgn * .85) * ls * la, y2 + Math.sin(ba - sgn * .85) * ls * la);
+            neon(p2, mixc(e.C[1], e.C[2], i / M), .4 * la * al, 0, 4);
+          }
+        }
+        x = x2; y = y2;
+      }
+    }
+  } else if (f === 'kaktus') {
+    const segs = clamp(Math.round(P.segs || 3), 1, 4), w = clamp(P.width ?? 8, 4, 12) * 1.6 * sc;
+    let yb = 0;
+    for (let s = 0; s < segs; s++) {
+      const hgt = (30 - s * 5) * sc * sm(clamp((grow * segs - s) / 1.2, 0, 1)); if (hgt <= 1) break;
+      const ww = w * (1 - s * .16);
+      const p = new Path2D();
+      if (p.roundRect) p.roundRect(-ww, yb - hgt, ww * 2, hgt + 2, ww); else p.rect(-ww, yb - hgt, ww * 2, hgt + 2);
+      neon(p, e.C[0], .55 * al, s === 0 ? .4 : .25, 5);
+      if (P.spikes) for (let k = 0; k < 4; k++) {
+        const sy = yb - hgt * (k + .5) / 4;
+        neon(line(-ww, sy, -ww - 4.5, sy - 1.5), e.C[2], .35 * al, 0, 4);
+        neon(line(ww, sy, ww + 4.5, sy - 1.5), e.C[2], .35 * al, 0, 4);
+      }
+      yb -= hgt;
+    }
+    const arms = clamp(Math.round(P.arms || 0), 0, 2);
+    for (let a2 = 0; a2 < arms; a2++) {
+      const sgn = a2 ? 1 : -1, ax = sgn * (w + 7), ay = -24 * sc;
+      const g2 = sm(clamp(grow * 2 - 1, 0, 1)); if (g2 <= 0) continue;
+      const p = new Path2D();
+      if (p.roundRect) p.roundRect(ax - 5.5 * sc, ay - 24 * sc * g2, 11 * sc, 24 * sc * g2, 5.5 * sc); else p.rect(ax - 5.5 * sc, ay - 24 * sc * g2, 11 * sc, 24 * sc * g2);
+      neon(line(sgn * w, ay, ax, ay), e.C[0], .45 * al * g2, 0, 4);
+      neon(p, e.C[0], .5 * al * g2, .2, 5);
+    }
+    if (S.harmony > .01 && grow >= 1) neon(circle(0, yb - 3, 2.4), mixc(e.C[2], PAL.liebe[0], .5), .55 * al * S.harmony, .6, 4);
+  } else if (f === 'pilz') {
+    for (const cp of e.caps) {
+      const g = sm(clamp((S.worldT - e.born - cp.ph * .3) / (CFG.grow * .7), 0, 1)); if (g <= 0) continue;
+      const stem = clamp(P.stem ?? 14, 6, 24) * 1.9 * cp.s * sc * g, capw = clamp(P.capw ?? 18, 8, 30) * 1.9 * cp.s * sc * g;
+      const sway = Math.sin(S.worldT * .2 * RM + cp.ph) * 1.5;
+      neon(line(cp.x - 2, 0, cp.x - 1 + sway * .3, -stem), e.C[0], .5 * al, 0, 4);
+      neon(line(cp.x + 2, 0, cp.x + 1 + sway * .3, -stem), e.C[0], .5 * al, 0, 4);
+      const p = new Path2D(); p.arc(cp.x + sway * .3, -stem, capw / 2, Math.PI, 0); p.closePath();
+      neon(p, e.C[1], .6 * al, .4, 5);
+      if (P.dots) for (let k = 0; k < 3; k++) dot(cp.x + sway * .3 + (hash(e.seed + k * 5 + cp.x) - .5) * capw * .6, -stem - capw * .18 - hash(e.seed + k * 9) * capw * .14, e.C[2], .5 * al * g, 2);
+    }
+  } else if (f === 'kristall') {
+    for (const sh of e.shards) {
+      const g = sm(clamp((grow - sh.d * .4) / .6, 0, 1)); if (g <= 0) continue;
+      const hgt = sh.h * 1.8 * sc * g, an = -Math.PI / 2 + sh.an;
+      const tx = Math.cos(an) * hgt, ty = Math.sin(an) * hgt;
+      const px = -Math.sin(an) * sh.w, py = Math.cos(an) * sh.w;
+      const shimmer = .45 + .15 * Math.sin(S.worldT * .12 * RM + sh.ph);
+      neon(poly([[0, 0], [tx * .35 + px, ty * .35 + py], [tx, ty], [tx * .35 - px, ty * .35 - py]], true), mixc(e.C[0], e.C[1], sh.d), shimmer * al, .5, 5);
+    }
   }
-  if (e.kind === 'feuer') {
-    neon(poly([[-9, 0], [0, -6], [9, 0]]), PAL.feuer[0], .5 * al, .3, 5);
-    for (let f = 0; f < 3; f++) {
-      const sway = Math.sin(S.worldT * (.22 + f * .05) * RM + e.ph + f * 2.1) * (3 + f * 2);
-      const hgt = (17 + f * 8) * e.sc * (1 + .06 * Math.sin(S.worldT * .3 * RM + f));
-      const p = new Path2D(); p.moveTo(-3 + f * 3, 0); p.quadraticCurveTo(sway * .5, -hgt * .55, sway, -hgt);
-      neon(p, mixc(PAL.feuer[0], PAL.feuer[1], f / 2), .5 * al, f === 1 ? .5 : 0, 5);
-    }
-    for (const p of e.parts) {
-      const hh = p.v * p.t, fade = clamp(1 - p.t / p.life, 0, 1);
-      const gold = mixc(PAL.feuer[1], PAL.liebe[1], S.harmony * .6);
-      dot(p.u + Math.sin(p.t * .8 + p.ph) * 6, -7 - hh, mixc(PAL.feuer[0], gold, p.t / p.life), .65 * fade * al, 3);
+}
+
+/* ============ ZEICHNEN: FEUER ============ */
+function drawFeuer(e) {
+  const P = e.V.p, al = entAlpha(e), f = e.V.f;
+  const hover = f === 'irrlicht' ? clamp(P.hover ?? 14, 4, 26) : 0;
+  const dx = hover ? Math.sin(S.worldT * .13 * RM + e.ph) * 8 : 0;
+  ctx.save(); ctx.translate(dx, -hover);
+  const fl = clamp(Math.round(P.flames ?? 2), 0, 4), fh = clamp(P.fh ?? 1, .4, 2.4);
+  const base = P.base | 0;
+  if (base === 1) neon(poly([[-14, 0], [0, -9], [14, 0]]), e.C[0], .5 * al, .3, 5);
+  if (base === 2) { const p = new Path2D(); p.ellipse(0, 0, 14, 4.2, 0, 0, Math.PI * 2); neon(p, e.C[0], .5 * al, .3, 5); }
+  if (base === 3) {
+    const cw = 17 + 7 * fh, ch = 23 + 10 * fh;
+    neon(poly([[-cw, 0], [0, -ch], [cw, 0]]), e.C[0], .55 * al, .35, 5);
+    neon(line(-cw * .4, -ch * .56, cw * .4, -ch * .56), e.C[0], .3 * al, 0, 4);
+    if (P.lava) for (let k = 0; k < 3; k++) {
+      const u = ((S.worldT * .05 * RM + k * .37 + e.ph) % 1), sgn = k % 2 ? 1 : -1;
+      dot(sgn * cw * u, -ch * (1 - u) * .95, mixc(e.C[1], e.C[0], u), .5 * al * Math.sin(u * Math.PI), 2.8);
     }
   }
-  if (e.kind === 'wasser') {
-    const sh = .3 + .12 * Math.sin(S.worldT * .15 * RM + e.ph);
-    neon(line(-13, -1, 13, -1), PAL.wasser[1], sh * al, .4, 5);
-    for (const r of e.rings) {
-      const rr = 4 + r.t * 7.5, fal = clamp(1 - rr / 64, 0, 1) * sm(r.t * 2);
-      const p = new Path2D(); p.ellipse(0, -1, rr, rr * .3, 0, 0, Math.PI * 2);
-      neon(p, PAL.wasser[0], .45 * fal * al, .3, 5);
+  const y0 = base === 3 ? -(21 + 9 * fh) : 0;
+  for (let k = 0; k < fl; k++) {
+    const off = (k - (fl - 1) / 2) * 7;
+    const sway = Math.sin(S.worldT * (.22 + k * .05) * RM + e.ph + k * 2.1) * (4 + k * 2);
+    const hgt = (26 + k * 8) * fh * e.sc * (1 + .06 * Math.sin(S.worldT * .3 * RM + k));
+    const wf = (4.5 + k * 1.5) * Math.min(1.4, fh); // Flammenkörper: Tropfenform statt Strich
+    const tx = off * .4 + sway, ty = y0 - hgt;
+    const p = new Path2D();
+    p.moveTo(off - wf, y0); p.quadraticCurveTo(off - wf + sway * .4, y0 - hgt * .55, tx, ty);
+    p.quadraticCurveTo(off + wf + sway * .6, y0 - hgt * .5, off + wf, y0);
+    neon(p, mixc(e.C[0], e.C[1], fl > 1 ? k / (fl - 1) : .5), .5 * al, k === ((fl / 2) | 0) ? .5 : 0, 5);
+  }
+  if (f === 'irrlicht') { ctx.fillStyle = col(e.C[1], .12 * al); ctx.fillRect(-10, y0 - 16, 20, 22); }
+  if (f === 'glut') {
+    for (let k = 0; k < 7; k++) {
+      const gx = (hash(e.seed + k * 3) - .5) * 30, gy = -2 - hash(e.seed + k * 7) * 8;
+      const puls = .22 + .22 * (0.5 + 0.5 * Math.sin(S.worldT * (.1 + hash(e.seed + k) * .1) * RM + k * 2.2));
+      dot(gx, gy, mixc(e.C[0], e.C[1], hash(e.seed + k * 11)), puls * al * 2, 3);
     }
-    for (const p of e.drops) {
-      const fade = clamp(1 - p.t / 2.2, 0, 1);
-      const cl = S.harmony > .3 && ((p.t * 7) | 0) % 3 === 0 ? PAL.wasser[2] : PAL.wasser[1];
-      dot(p.x, p.y - 3, cl, .6 * fade * al, 2.5);
-    }
+  }
+  const epat = P.epat | 0;
+  for (const p of e.parts) {
+    const hh = p.v * p.t, fade = clamp(1 - p.t / p.life, 0, 1);
+    let ex = p.u, ey = y0 - 7 - hh;
+    if (epat === 1) ex = p.u + Math.sin(p.t * 1.1 + p.ph) * (4 + hh * .18);
+    else if (epat === 2) ex = p.u + Math.sin(p.t * .6 + p.ph) * 9;
+    else ex = p.u + Math.sin(p.t * .8 + p.ph) * 5;
+    const gold = mixc(e.C[1], PAL.liebe[1], S.harmony * .5);
+    dot(ex, ey, mixc(e.C[0], gold, p.t / p.life), .6 * fade * al, 2.8);
   }
   ctx.restore();
 }
-function drawWind(e) {
-  const al = entAlpha(e) * .9;
-  for (let k = 0; k < e.n; k++) {
-    const phd = e.ph + k * Math.PI * 2 / e.n + S.worldT * e.spd * RM;
-    if (!visible(phd)) continue;
-    const rr = R + e.alt + Math.sin(S.worldT * .18 * RM + k * 1.3 + e.ph) * 7;
-    const pts = [];
-    for (let j = 0; j <= 3; j++) { const pj = phd + j * .02; pts.push([CX + rr * Math.cos(pj), CY + rr * Math.sin(pj)]); }
-    neon(poly(pts), PAL.wind[0], .26 * al, 0, 5);
-    dot(pts[3][0], pts[3][1], PAL.wind[1], .4 * al, 2.5);
+
+/* ============ ZEICHNEN: WASSER ============ */
+function drawWasser(e) {
+  const P = e.V.p, al = entAlpha(e), age = S.worldT - e.born;
+  const pool = clamp(P.pool ?? 12, 0, 34) * 1.5 * e.sc;
+  if (pool > 1) {
+    const sh = .42 + .12 * Math.sin(S.worldT * .15 * RM + e.ph);
+    neon(line(-pool, -1, pool, -1), e.C[1], sh * al, .4, 5);
+    if (P.ice) { dot(-pool, -2, e.C[2], .5 * al, 2.5); dot(pool, -2, e.C[2], .5 * al, 2.5); }
+  }
+  for (const r of e.rings) {
+    const rr = 5 + r.t * 9.5, fal = clamp(1 - rr / 82, 0, 1) * sm(r.t * 2);
+    if (P.ice) { // kristalline Ringe: Sechseck statt Kreis
+      const pts = [];
+      for (let k = 0; k <= 6; k++) { const an = k / 6 * Math.PI * 2 + .3; pts.push([Math.cos(an) * rr, -1 + Math.sin(an) * rr * .3]); }
+      neon(poly(pts), e.C[0], .55 * fal * al, .35, 5);
+    } else {
+      const p = new Path2D(); p.ellipse(0, -1, rr, rr * .3, 0, 0, Math.PI * 2);
+      neon(p, e.C[0], .55 * fal * al, .3, 5);
+    }
+  }
+  if (P.period > 0 && (age % P.period) < 1.6) { // Geysirsäule
+    const u = (age % P.period) / 1.6, hgt = clamp(P.dvy ?? 50, 20, 80) * Math.sin(u * Math.PI);
+    const p = new Path2D(); p.moveTo(0, 0);
+    for (let j = 1; j <= 6; j++) p.lineTo(Math.sin(j * 1.1 + S.worldT * 2) * 2.5, -hgt * j / 6);
+    neon(p, e.C[1], .5 * al * Math.sin(u * Math.PI), .4, 5);
+  }
+  for (const p of e.drops) {
+    const fade = clamp(1 - p.t / 2.2, 0, 1);
+    const cl = S.harmony > .3 && ((p.t * 7) | 0) % 3 === 0 ? e.C[2] : e.C[1];
+    dot(p.x, p.y - 3, cl, .7 * fade * al, 3.2);
+  }
+  if (P.mist) for (const p of e.parts) {
+    const fade = Math.sin(clamp(p.t / p.life, 0, 1) * Math.PI);
+    dot(p.u + Math.sin(p.t * .5 + p.ph) * 8, -4 - p.v * p.t, e.C[2], .3 * fade * al, 3.5);
   }
 }
+
+/* ============ ZEICHNEN: WIND ============ */
+function drawWindEnt(e) {
+  const P = e.V.p, al = entAlpha(e) * .9, f = e.V.f;
+  const amp = clamp(P.amp ?? 7, 2, 14), len = clamp(P.len ?? 1, .4, 1.8);
+  if (f === 'band' || f === 'feder') { // freie Strömung, planetenunabhängig
+    for (let k = 0; k < e.n; k++) {
+      const phd = e.ph + k * Math.PI * 2 / e.n + S.worldT * e.spd * RM;
+      if (!visible(phd)) continue;
+      const rr = R + e.alt + Math.sin(S.worldT * .18 * RM + k * 1.3 + e.ph) * amp;
+      const pts = [], segs = f === 'feder' ? 7 : 3, dphi = (f === 'feder' ? .012 : .02) * len;
+      for (let j = 0; j <= segs; j++) {
+        const pj = phd + j * dphi;
+        const wob = f === 'feder' ? Math.sin(j * .9 + S.worldT * .4 * RM + k) * amp * .35 : 0;
+        pts.push([CX + (rr + wob) * Math.cos(pj), CY + (rr + wob) * Math.sin(pj)]);
+      }
+      const cyc = f === 'feder' ? .25 + .75 * (0.5 + 0.5 * Math.sin(S.worldT * .1 * RM + k * 2.3)) : 1;
+      neon(poly(pts), e.C[0], .26 * al * cyc, 0, 5);
+      dot(pts[segs][0], pts[segs][1], e.C[1], .4 * al * cyc, 2.5);
+    }
+    return;
+  }
+  const phi = e.a + S.om; if (!visible(phi)) return;
+  const alt = Math.max(e.alt, 16);
+  if (f === 'wirbel') {
+    const [cx0, cy0] = spos(phi, alt);
+    const rot = S.worldT * e.spd * 9 * RM + e.ph, turns = clamp(Math.round(P.turns || 2), 1, 3);
+    const pts = [];
+    for (let th = 0; th < turns * Math.PI * 2; th += .3) {
+      const rr = 2.5 + th / (turns * Math.PI * 2) * amp * 1.7;
+      pts.push([cx0 + Math.cos(th + rot) * rr, cy0 + Math.sin(th + rot) * rr * .8]);
+    }
+    neon(poly(pts), e.C[0], .32 * al, .2, 5);
+    dot(cx0, cy0, e.C[1], .4 * al, 2);
+  } else if (f === 'fahne') {
+    const [bx, by] = spos(phi, alt);
+    const tang = phi + Math.PI / 2;
+    const pts = [], n = 11, flen = 44 * len;
+    for (let j = 0; j <= n; j++) {
+      const d = j / n * flen;
+      const wob = Math.sin(j * .7 - S.worldT * e.spd * 26 * RM + e.ph) * amp * (j / n);
+      pts.push([bx + Math.cos(tang) * d + Math.cos(phi) * wob, by + Math.sin(tang) * d + Math.sin(phi) * wob]);
+    }
+    neon(line(bx, by, bx + Math.cos(phi) * 10, by + Math.sin(phi) * 10), e.C[1], .3 * al, 0, 4);
+    neon(poly(pts), e.C[0], .34 * al, .2, 5);
+  } else if (f === 'schleier') {
+    for (let s2 = 0; s2 < 3; s2++) {
+      const rr = R + alt + s2 * 9;
+      const pts = [];
+      for (let j = -6; j <= 6; j++) {
+        const pj = phi + j * .01 * len;
+        const wob = Math.sin(j * .8 + S.worldT * .25 * RM + e.ph + s2) * amp * .5;
+        pts.push([CX + (rr + wob) * Math.cos(pj), CY + (rr + wob) * Math.sin(pj)]);
+      }
+      neon(poly(pts), mixc(e.C[0], e.C[1], s2 / 2), .15 * al, 0, 5);
+    }
+  }
+}
+
+/* ============ ZEICHNEN: LIEBE ============ */
+function heartPath(x, y, s) {
+  const p = new Path2D();
+  p.moveTo(x, y + s * .9);
+  p.bezierCurveTo(x + s * 1.3, y - s * .5, x + s * .65, y - s * 1.4, x, y - s * .55);
+  p.bezierCurveTo(x - s * .65, y - s * 1.4, x - s * 1.3, y - s * .5, x, y + s * .9);
+  return p;
+}
+function lovePos(e, tOff = 0) {
+  const t = S.worldT - tOff;
+  const alt = clamp(e.V.p.alt ?? 50, 24, 95) + 14 * Math.sin(t * .11 * RM + e.ph);
+  const phi = e.a + S.om + Math.sin(t * .04 * RM + e.ph) * clamp(e.V.p.wob ?? .24, .05, .45);
+  return [phi, alt];
+}
 function drawLove(e) {
-  const al = entAlpha(e);
-  const alt = 48 + 20 * Math.sin(S.worldT * .11 * RM + e.ph);
-  const phiM = e.a + S.om + Math.sin(S.worldT * .04 * RM + e.ph) * .24; // pendelt, fliegt nie davon
+  const P = e.V.p, al = entAlpha(e), f = e.V.f;
+  const [phiM, alt] = lovePos(e);
   if (!visible(phiM)) return;
   const [x, y] = spos(phiM, alt);
-  const pulse = .8 + .2 * Math.sin(S.worldT * .15 * RM + e.ph);
-  ctx.fillStyle = col(PAL.liebe[0], .16 * al * pulse); ctx.fillRect(x - 7, y - 7, 14, 14);
-  dot(x, y, PAL.liebe[0], .95 * al * pulse, 5);
-  for (const an of [0, Math.PI / 2, Math.PI, Math.PI * 1.5])
-    neon(line(x + Math.cos(an) * 5, y + Math.sin(an) * 5, x + Math.cos(an) * 10, y + Math.sin(an) * 10), PAL.liebe[1], .55 * al * pulse, 0, 4);
-  // Fäden zu den zwei nächsten Geschöpfen — Liebe verbindet
+  const size = clamp(P.size ?? 5, 2.5, 7);
+  const pulse = .8 + .2 * Math.sin(S.worldT * clamp(P.pulse ?? .14, .05, .25) * 6.3 * RM + e.ph);
+  ctx.fillStyle = col(e.C[0], .16 * al * pulse); ctx.fillRect(x - 7, y - 7, 14, 14);
+  if (f === 'komet') for (let k = 1; k <= 5; k++) {
+    const [pk, ak] = lovePos(e, k * .5), [tx2, ty2] = spos(pk, ak);
+    dot(tx2, ty2, e.C[0], .3 * al * (1 - k / 6), 2.5);
+  }
+  if (f === 'herz') neon(heartPath(x, y, size * 1.4), e.C[0], .8 * al * pulse, .7, 5);
+  else if (f === 'ring') { neon(circle(x, y, size + 2.5), e.C[0], .7 * al * pulse, .6, 5); dot(x, y, e.C[1], .8 * al * pulse, 2.5); }
+  else if (f === 'doppel') {
+    const orb = S.worldT * .5 * RM + e.ph;
+    for (const sgn of [1, -1]) dot(x + Math.cos(orb) * 7 * sgn, y + Math.sin(orb) * 5 * sgn, sgn > 0 ? e.C[0] : e.C[1], .85 * al * pulse, size * .8);
+  } else if (f === 'bluete') {
+    for (let k = 0; k < 7; k++) { const an = k / 7 * Math.PI * 2 + S.worldT * .05 * RM; dot(x + Math.cos(an) * (size + 2), y + Math.sin(an) * (size + 2), e.C[0], .6 * al * pulse, 2.5); }
+    dot(x, y, e.C[1], .9 * al * pulse, 3);
+  } else dot(x, y, e.C[0], .95 * al * pulse, size);
+  const rays = clamp(Math.round(P.rays ?? 4), 0, 8);
+  for (let k = 0; k < rays; k++) {
+    const an = k / rays * Math.PI * 2 + (f === 'stern' ? 0 : .4);
+    neon(line(x + Math.cos(an) * (size + 1), y + Math.sin(an) * (size + 1), x + Math.cos(an) * (size + 5.5), y + Math.sin(an) * (size + 5.5)), e.C[1], .5 * al * pulse, 0, 4);
+  }
+  // Fäden — Liebe verbindet
+  const reach = clamp(P.reach ?? .6, .2, .9), maxT = clamp(Math.round(P.threads ?? 2), 1, 3), ts = P.tstyle | 0;
   const targets = S.ents
     .filter(o => o !== e && !o.dying && o.kind !== 'wind' && o.kind !== 'liebe')
     .map(o => ({ o, d: Math.abs(angDiff(o.a + S.om, phiM)) }))
-    .filter(t => t.d < .6).sort((p, q) => p.d - q.d).slice(0, 2);
+    .filter(t => t.d < reach).sort((p, q) => p.d - q.d).slice(0, maxT);
   targets.forEach((t, i) => {
     const [tx, ty] = spos(t.o.a + S.om);
     const midPhi = phiM + angDiff(t.o.a + S.om, phiM) / 2;
     const [mx, my] = spos(midPhi, alt * .5 + 26);
-    const p = new Path2D(); p.moveTo(x, y); p.quadraticCurveTo(mx, my, tx, ty);
-    neon(p, PAL.liebe[0], (.2 + .08 * Math.sin(S.worldT * .13 * RM + i * 2)) * al, 0, 5);
+    const a2 = (.2 + .08 * Math.sin(S.worldT * .13 * RM + i * 2)) * al;
+    if (ts === 2) { // Punktfaden
+      for (let u = .1; u < 1; u += .12) {
+        const bx2 = (1 - u) * (1 - u) * x + 2 * (1 - u) * u * mx + u * u * tx;
+        const by2 = (1 - u) * (1 - u) * y + 2 * (1 - u) * u * my + u * u * ty;
+        dot(bx2, by2, e.C[0], a2 * 1.6, 2);
+      }
+    } else {
+      const p = new Path2D(); p.moveTo(x, y); p.quadraticCurveTo(mx, my, tx, ty);
+      neon(p, e.C[0], a2, 0, 5);
+      if (ts === 1) { const p2 = new Path2D(); p2.moveTo(x, y); p2.quadraticCurveTo(mx, my + 9, tx, ty); neon(p2, e.C[1], a2 * .55, 0, 4); }
+    }
   });
+}
+
+function drawEnt(e) {
+  if (e.kind === 'liebe') return drawLove(e);
+  if (e.kind === 'wind') return drawWindEnt(e);
+  const phi = e.a + S.om;
+  if (!visible(phi)) return;
+  const [bx, by] = spos(phi);
+  ctx.save(); ctx.translate(bx, by); ctx.rotate(phi + Math.PI / 2);
+  if (e.kind === 'erde') drawErde(e);
+  else if (e.kind === 'feuer') drawFeuer(e);
+  else if (e.kind === 'wasser') drawWasser(e);
+  ctx.restore();
 }
 
 /* ============ UI ============ */
@@ -436,11 +809,11 @@ function btnRects() {
 }
 function topBtns() {
   const u = UI, bs = 26 * u, gap = 8 * u, y0 = 14 * u;
-  return [['M', AU.on], ['G', CFG.glow], ['×', true]].map(([n, on], i) => ({ x: W - 14 * u - (3 - i) * (bs + gap) + gap, y: y0, s: bs, n, on }));
+  return [['M', AU.on], ['G', CFG.glow], ['i', true], ['×', true]].map(([n, on], i) => ({ x: W - 14 * u - (4 - i) * (bs + gap) + gap, y: y0, s: bs, n, on }));
 }
 function drawUI() {
   const u = UI;
-  txt('NEON5 · DIE FÜNF ELEMENTE · V0.3', 14 * u, 18 * u, 9 * u, RIMC, .3, 'left');
+  txt('NEON5 · DIE FÜNF ELEMENTE · V0.4', 14 * u, 18 * u, 9 * u, RIMC, .3, 'left');
   for (const b of btnRects()) {
     const seld = S.sel === b.i, c = PAL[b.e.k][0];
     const p = new Path2D(); p.rect(b.x, b.y, b.w, b.h);
@@ -452,19 +825,25 @@ function drawUI() {
     neon(p, b.on ? RIMC : [90, 100, 105], b.on ? .5 : .25, 0, 5);
     txt(b.n, b.x + b.s / 2, b.y + b.s / 2 + 1, 12 * u, b.on ? WHITE : [130, 140, 145], b.on ? .8 : .45, 'center');
   }
+  // Namensschilder der jüngsten Schöpfungen
+  for (const l of S.labels) {
+    const t = S.worldT - l.t0, a = Math.min(t / .4, 1, (3.6 - t) / 1) * .75;
+    const [x, y] = spos(l.a + S.om, l.alt + 26 + t * 6);
+    txt(l.text, clamp(x, 70, W - 70), y, 9.5 * u, l.c, a, 'center', 1);
+  }
   const hintA = clamp(1 - (S.worldT - (S.startT || 0) - 8) / 8, 0, .34);
   if (S.started && hintA > .01) txt('WÄHLE EIN ELEMENT · BERÜHRE DEN PLANETEN', W / 2, H - 58 * u, 9.5 * u, PAL[ELEMENTS[S.sel].k][0], hintA, 'center', 1);
 }
 
 /* ============ EINGABE ============ */
+const introEl = document.getElementById('intro');
 function start() {
-  if (S.started) return;
+  if (S.started) { introEl.classList.add('hide'); return; }
   S.started = true; S.startT = S.worldT;
-  document.getElementById('intro').classList.add('hide');
+  introEl.classList.add('hide');
   if (CFG.audio) AU.init();
   AU.resume();
 }
-const introEl = document.getElementById('intro');
 for (const ev of ['pointerdown', 'touchstart', 'click'])
   introEl.addEventListener(ev, e => { e.preventDefault(); start(); }, { passive: false });
 addEventListener('keydown', e => {
@@ -476,6 +855,7 @@ addEventListener('keydown', e => {
   else if (c === 'KeyM') AU.toggle();
   else if (c === 'KeyG') CFG.glow = !CFG.glow;
   else if (c === 'KeyC') letGo();
+  else if (c === 'KeyI') introEl.classList.remove('hide');
 });
 function letGo() { for (const e of S.ents) if (!e.dying) e.dying = S.worldT; save(); }
 addEventListener('visibilitychange', () => { document.hidden ? AU.suspend() : (S.started && AU.resume()); });
@@ -484,14 +864,15 @@ cv.addEventListener('pointerdown', ev => {
   if (!wasStarted) return;
   const x = ev.clientX, y = ev.clientY;
   for (const b of topBtns()) if (x >= b.x - 5 && x <= b.x + b.s + 5 && y >= b.y - 5 && y <= b.y + b.s + 5) {
-    if (b.n === 'M') AU.toggle(); else if (b.n === 'G') CFG.glow = !CFG.glow; else letGo();
+    if (b.n === 'M') AU.toggle(); else if (b.n === 'G') CFG.glow = !CFG.glow;
+    else if (b.n === 'i') introEl.classList.remove('hide'); else letGo();
     return;
   }
   for (const b of btnRects()) if (x >= b.x && x <= b.x + b.w && y >= b.y - 6 && y <= b.y + b.h + 6) { S.sel = b.i; return; }
   if (S.worldT - S.lastPlant < .18) return; S.lastPlant = S.worldT;
   const dx = x - CX, dy = y - CY, dist = Math.hypot(dx, dy);
   const phi = Math.atan2(dy, dx), kind = ELEMENTS[S.sel].k;
-  if (kind === 'wind') plant(kind, phi - S.om, clamp(dist - R, 24, 150));
+  if (kind === 'wind' || kind === 'liebe') plant(kind, phi - S.om, clamp(dist - R, 20, 150));
   else plant(kind, phi - S.om);
 });
 
@@ -506,14 +887,30 @@ function frame(t) {
   drawSky();
   drawPlanet();
   for (const e of S.ents) if (e.kind !== 'liebe') drawEnt(e);
+  drawTaktlicht();
   for (const e of S.ents) if (e.kind === 'liebe') drawEnt(e); // Liebe zuletzt: ihre Fäden liegen oben
   drawUI();
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
-// Debug-Griff für Tests: NF.plant('erde', -0.3), NF.warp(15)
-window.NF = { S, plant: (k, off = 0, alt = 40) => plant(k, -Math.PI / 2 + off - S.om, k === 'wind' ? alt : 0), warp(sec) { const st = .033; for (let k = 0; k < sec / st; k++) update(st); }, letGo };
+// Debug-Griff: NF.plant(art, winkelOffset, höhe, variante), NF.gallery(art), NF.warp(s)
+window.NF = {
+  S, VAR,
+  plant: (k, off = 0, alt = 40, v = -1) => plant(k, -Math.PI / 2 + off - S.om, (k === 'wind' || k === 'liebe') ? alt : 0, v),
+  warp(sec) { const st = .033; for (let k = 0; k < sec / st; k++) update(st); },
+  gallery(k, page = 0, per = 8) {
+    S.ents = []; S.labels = [];
+    const lib = VAR[k], i0 = page * per, i1 = Math.min(lib.length, i0 + per);
+    for (let i = i0; i < i1; i++) {
+      const j = i - i0, cnt = i1 - i0;
+      const off = (cnt > 1 ? (j / (cnt - 1) - .5) : 0) * ARC * 1.25;
+      plant(k, -Math.PI / 2 + off - S.om, k === 'wind' ? 34 + (j % 4) * 24 : (k === 'liebe' ? 40 + (j % 3) * 18 : 0), i);
+    }
+    S.labels = [];
+  },
+  letGo,
+};
 
 })();
 </script>

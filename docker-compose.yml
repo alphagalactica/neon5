@@ -1,0 +1,12 @@
+services:
+  neon5:
+    build: .
+    restart: unless-stopped
+    expose:
+      - 80
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
