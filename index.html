@@ -46,18 +46,19 @@
   <div class="t2">DIE FÜNF ELEMENTE</div>
   <div class="rule"></div>
   <p class="st">Ein schwarzer Planet in einem dunklen Universum.
-  Fünf Kräfte unter deiner Fingerspitze. Was du pflanzt, wird Teil einer Spieluhr:
-  Ein Taktlicht umkreist den Planeten und spielt deine Welt als Symphonie —
-  wo du erschaffst, bestimmt Takt und Klangfarbe. Sie gerät nie aus dem Takt,
-  sie kennt keine Dissonanz. Und doch klingt kein Besuch wie der andere.
-  Je mehr du erschaffst, desto lebendiger wird das Universum über dir.</p>
+  Fünf Kräfte unter deiner Fingerspitze. Was du pflanzt, wird zur Schallplatte
+  deiner Welt: Eine Nadel wandert über die Erdrundung und spielt deine
+  Geschöpfe — Handpan, Gong, Regenrohr, Cello, Atem. Kein Dauerton, keine
+  Dissonanz, nichts gerät aus dem Takt: Musik entsteht nur, wo du erschaffen
+  hast. Und doch klingt kein Besuch wie der andere. Je mehr du erschaffst,
+  desto lebendiger wird das Universum über dir.</p>
   <div class="elems"><span class="e1">ERDE</span><span class="e2">FEUER</span><span class="e3">WASSER</span><span class="e4">WIND</span><span class="e5">LIEBE</span></div>
   <p class="hint">Die fünf leuchtenden Zeichen unten sind deine Kraftquellen — eines wählen
   (oder Tasten 1–5), dann den Planeten berühren · das Orbit-Zeichen links oben (O)
   wechselt Stille · Gleiten · Flug · Note = Ton (M) · Strahlpunkt = Glow (G) ·
   × = die Welt loslassen (C) · i = diese Seite</p>
   <div class="go">EINTRETEN</div>
-  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.6</div>
+  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.7</div>
 </div></div>
 <script src="variants.js"></script>
 <script>
@@ -65,7 +66,7 @@
 (() => {
 
 /* ============ KONFIG ============ */
-const CFG = { glow: true, audio: true, volume: 0.45, grow: 12, maxEnts: 44 };
+const CFG = { glow: true, audio: true, volume: 0.52, grow: 12, maxEnts: 44 };
 // Orbit-Gänge: wie schnell die Welt unter dir vorbeizieht (rad/s)
 const ORBITS = [{ v: .005, n: 'STILLE' }, { v: .02, n: 'GLEITEN' }, { v: .045, n: 'FLUG' }];
 const ELEMENTS = [
@@ -153,7 +154,7 @@ const S = {
    Der Winkel einer Schöpfung ist ihr Platz im Takt, links/rechts wird zum Panorama,
    das Element zur Stimme, die Variante zur Tonhöhe. */
 const AU = {
-  ctx: null, on: CFG.audio, master: null, comp: null, pad: [], chimeBus: null, loveG: null,
+  ctx: null, on: CFG.audio, master: null, comp: null, chimeBus: null,
   timer: null, lastSpawn: -9,
   key: 110, minor: 1, bpm: 52, prog: [0, 8, 3, 10], pent: [0, 3, 5, 7, 10],
   stepDur: 0, steps: 64, loopDur: 0, loopStart: 0, nextStep: 0, chordI: 0,
@@ -173,20 +174,10 @@ const AU = {
       const comp = this.comp = c.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 4; comp.attack.value = .01; comp.release.value = .4;
       this.master = c.createGain(); this.master.gain.value = this.on ? CFG.volume : 0;
       comp.connect(this.master).connect(c.destination);
-      // Der Teppich: reine Sinus-Schichten (Grundton, Quinte, Oktavpaar, weiche Duodezime).
-      // Kein Sägezahn, kein Filter-Wah, keine hörbare Schwebung — nur ein glasiges, stilles Fundament.
-      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = .5;
-      const padG = c.createGain(); padG.gain.value = 0; lp.connect(padG).connect(comp);
-      padG.gain.linearRampToValueAtTime(0.055, c.currentTime + 8);
-      const lfo = c.createOscillator(); lfo.frequency.value = .03; // atmet nur in der Lautstärke, sehr leise
-      const lfoG = c.createGain(); lfoG.gain.value = .005; lfo.connect(lfoG).connect(padG.gain); lfo.start();
-      const mk = (type, mult, g) => { const o = c.createOscillator(); o.type = type; o.frequency.value = this.key * mult; const og = c.createGain(); og.gain.value = g; o.connect(og).connect(lp); o.start(); this.pad.push({ o, mult }); };
-      mk('sine', 1, .3); mk('sine', 1.5, .09); mk('sine', 2, .16); mk('sine', 2.0015, .05); mk('triangle', 3, .03);
-      const lo = c.createOscillator(); lo.type = 'sine'; lo.frequency.value = this.key * (this.minor ? 2.4 : 2.5);
-      this.loveG = c.createGain(); this.loveG.gain.value = 0; lo.connect(this.loveG).connect(comp); lo.start();
-      this.chimeBus = c.createGain(); this.chimeBus.gain.value = .55; this.chimeBus.connect(comp);
+      // Kein Dauerklang mehr: Musik entsteht nur aus den Geschöpfen — dazwischen Stille und Echo.
+      this.chimeBus = c.createGain(); this.chimeBus.gain.value = .6; this.chimeBus.connect(comp);
       const dl = c.createDelay(1); dl.delayTime.value = this.stepDur * 3;
-      const fb = c.createGain(); fb.gain.value = .28; const mix = c.createGain(); mix.gain.value = .38;
+      const fb = c.createGain(); fb.gain.value = .34; const mix = c.createGain(); mix.gain.value = .48;
       this.chimeBus.connect(dl); dl.connect(fb).connect(dl); dl.connect(mix).connect(comp);
       // Ein gemeinsamer Rausch-Puffer für alle Wind-/Feuer-Stimmen (statt Buffer-Churn pro Note)
       this.nbuf = c.createBuffer(1, c.sampleRate * 3, c.sampleRate);
@@ -204,16 +195,11 @@ const AU = {
   degFreq(deg, oct) { const p = this.pent[((deg % 5) + 5) % 5]; return this.key * Math.pow(2, p / 12) * Math.pow(2, oct); },
   tick() {
     const c = this.ctx; if (!c || c.state !== 'running') return;
-    this.loveG.gain.setTargetAtTime(S.harmony * .02, c.currentTime, 2);
     const now = c.currentTime;
     while (this.loopStart + this.nextStep * this.stepDur < now + .5) {
       const t0 = this.loopStart + this.nextStep * this.stepDur;
       const sIn = this.nextStep % this.steps;
-      if (sIn % 16 === 0) { // Akkordwechsel je Takt — der Teppich gleitet mit
-        this.chordI = (sIn / 16) | 0;
-        const root = this.chordRoot();
-        for (const v of this.pad) v.o.frequency.setTargetAtTime(root * v.mult, t0, .35); // kurzer, sanfter Übergang statt Sirenen-Glissando
-      }
+      if (sIn % 16 === 0) this.chordI = (sIn / 16) | 0; // die Harmonie wandert still weiter
       if (this.on && t0 > now - .05) this.playStep(sIn, t0);
       this.nextStep++;
     }
@@ -231,6 +217,7 @@ const AU = {
       const pan = clamp((sx - W / 2) / (W / 2), -1, 1) * .5;
       this.voice(e, t0, pan); played++;
       e.glintT = S.worldT + Math.max(0, t0 - this.ctx.currentTime);
+      S.needleT = e.glintT; // die Nadel pulst, wenn sie liest
       if (skyEcho.length < 6) skyEcho.push({ i: (Math.random() * stars.length) | 0, t0: e.glintT }); // das All antwortet
     }
   },
@@ -251,14 +238,57 @@ const AU = {
     gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(g, t0 + att); gn.gain.setTargetAtTime(0, t0 + att, tau);
     src.start(t0, Math.random() * 1.2, att + tau * 6 + .1); src.stop(t0 + att + tau * 6);
   },
-  voice(e, t0, pan) { // die Stimme einer Schöpfung — Tonhöhe aus ihrer Variante
+  /* Die Instrumente — jedes ein kleines physisches Modell aus Teiltönen */
+  handpan(f, g, t0, dest, short) { // warmes Metall: Grundton, Oktave, Duodezime, Hauch Vierklang
+    const P = [[1, 1], [2.007, .5], [3.03, .3], [4.16, .13]];
+    for (let i = 0; i < (short ? 3 : 4); i++) {
+      const tau = (short ? .38 : .75) / (1 + i * .7);
+      this.note(f * P[i][0], 'sine', g * P[i][1], .004, tau, t0, dest);
+    }
+  },
+  gong(f, g, t0, dest, short) { // Bronze: unharmonische Teiltöne, die nach dem Anschlag aufblühen
+    const c = this.ctx;
+    const P = [[1, 1], [1.483, .6], [2.121, .42], [2.94, .26], [3.76, .16], [5.04, .09]];
+    for (let i = 0; i < (short ? 3 : 6); i++) {
+      const gv = g * P[i][1], tau = (short ? 1 : 2.8) / (1 + i * .35);
+      const gn = c.createGain(); gn.gain.value = 0; gn.connect(dest);
+      gn.gain.setValueAtTime(0, t0);
+      gn.gain.linearRampToValueAtTime(gv * .55, t0 + .012);
+      gn.gain.linearRampToValueAtTime(gv, t0 + (short ? .12 : .45));
+      gn.gain.setTargetAtTime(0, t0 + (short ? .16 : .5), tau);
+      const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f * P[i][0]; o.connect(gn);
+      o.start(t0); o.stop(t0 + (short ? 4 : 12));
+    }
+  },
+  regenrohr(g, t0, dest) { // Kaskade winziger Glasperlen, die Dichte fällt aus
+    const n = 24;
+    for (let i = 0; i < n; i++) {
+      const ti = t0 + Math.pow(i / n, 1.4) * 1.7 + Math.random() * .03;
+      this.note(1400 + Math.random() * 2800, 'sine', g * (.35 + Math.random() * .65) * (1 - i / n * .55), .002, .045, ti, dest);
+    }
+  },
+  cello(f1, f2, g, t0, dest, dur = 2.4) { // gestrichener Schwell-Zweiklang mit spätem Vibrato
+    const c = this.ctx;
+    for (const [f, gg] of [[f1, g], [f2, g * .8], [f1 * .5, g * .45]]) {
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = Math.min(1800, f * 3.2); lp.Q.value = .8;
+      const gn = c.createGain(); gn.gain.value = 0; lp.connect(gn).connect(dest);
+      gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(gg, t0 + dur * .38);
+      gn.gain.setValueAtTime(gg, t0 + dur * .62); gn.gain.linearRampToValueAtTime(0, t0 + dur);
+      const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp);
+      const vib = c.createOscillator(); vib.frequency.value = 4.3;
+      const vg = c.createGain(); vg.gain.value = 0; vib.connect(vg).connect(o.frequency);
+      vg.gain.setValueAtTime(0, t0); vg.gain.linearRampToValueAtTime(f * .0045, t0 + dur * .5);
+      o.start(t0); vib.start(t0); o.stop(t0 + dur + .1); vib.stop(t0 + dur + .1);
+    }
+  },
+  voice(e, t0, pan) { // die Stimme einer Schöpfung unter der Nadel — kurz, leise, verortet
     const deg = (e.v * 7 + (e.seed >>> 8)) % 5;
     const warm = 1 + .3 * S.harmony;
-    if (e.kind === 'erde') { const dest = this.out(pan); const f = this.degFreq(deg, e.v % 2); this.note(f, 'triangle', .05 * warm, .008, .3, t0, dest); this.note(f * 2, 'sine', .02, .008, .2, t0, dest); }
-    else if (e.kind === 'wasser') { const f = this.degFreq(deg, 1 + (e.v % 2)); this.note(f, 'sine', .04 * warm, .01, 1.2, t0, this.chimeBus); this.note(f * 3, 'sine', .012, .01, .8, t0, this.chimeBus); }
-    else if (e.kind === 'feuer') { const dest = this.out(pan); this.note(this.chordRoot() / 2, 'sine', .07, .012, .28, t0, dest); this.noiseAt(300, .8, .012, .02, .12, t0, dest); }
-    else if (e.kind === 'wind') { this.noiseAt(420 + e.alt * 3, .7, .02, .5, 1, t0, this.out(pan)); }
-    else if (e.kind === 'liebe') { const f1 = this.degFreq(deg, 1), f2 = this.degFreq(deg + 2, 1); this.note(f1, 'sine', .035 * warm, .18, 1.6, t0, this.chimeBus); this.note(f2, 'sine', .03 * warm, .22, 1.6, t0, this.chimeBus); }
+    if (e.kind === 'erde') this.handpan(this.degFreq(deg, e.v % 2), .055 * warm, t0, this.out(pan), true);
+    else if (e.kind === 'wasser') { const f = this.degFreq(deg, 1 + (e.v % 2)); this.note(f * 2, 'sine', .035 * warm, .01, 1.1, t0, this.chimeBus); this.note(f * 4, 'sine', .01, .01, .7, t0, this.chimeBus); }
+    else if (e.kind === 'feuer') this.gong(this.chordRoot() / 2, .06 * warm, t0, this.out(pan), true);
+    else if (e.kind === 'wind') this.noiseAt(420 + e.alt * 3, .7, .018, .5, 1, t0, this.out(pan));
+    else if (e.kind === 'liebe') this.cello(this.degFreq(deg, 1), this.degFreq(deg + 2, 1), .035 * warm, t0, this.chimeBus, 1.6);
   },
   spawn(kind, e) { // Erschaffungsklang — aufs nächste 16tel gerastert, damit nichts stolpert
     const c = this.ctx; if (!c || !this.on || c.state !== 'running') return;
@@ -266,11 +296,11 @@ const AU = {
     const k = Math.ceil((c.currentTime + .03 - this.loopStart) / this.stepDur);
     const t0 = this.loopStart + k * this.stepDur;
     const deg = e ? (e.v * 7 + (e.seed >>> 8)) % 5 : 0;
-    if (kind === 'erde') { this.note(this.degFreq(deg, 1), 'sine', .06, .03, .5, t0, this.comp); this.note(this.key, 'triangle', .035, .04, .7, t0, this.comp); }
-    else if (kind === 'feuer') { this.note(this.chordRoot() / 2, 'sine', .08, .012, .3, t0, this.comp); this.noiseAt(340, .8, .018, .02, .18, t0, this.comp); }
-    else if (kind === 'wasser') { const f = this.degFreq(deg, 2); this.note(f, 'sine', .045, .012, 1.3, t0, this.chimeBus); this.note(f * 2, 'sine', .014, .012, .9, t0, this.chimeBus); }
-    else if (kind === 'wind') this.noiseAt(760, .6, .026, .4, .9, t0, this.comp);
-    else if (kind === 'liebe') { this.note(this.degFreq(deg, 1), 'sine', .038, .12, 1.3, t0, this.chimeBus); this.note(this.degFreq(deg + 2, 1), 'sine', .032, .16, 1.3, t0, this.chimeBus); }
+    if (kind === 'erde') this.handpan(this.degFreq(deg, 1), .085, t0, this.chimeBus);
+    else if (kind === 'feuer') this.gong(this.chordRoot() * (deg % 2 ? 1 : .5), .1, t0, this.comp);
+    else if (kind === 'wasser') this.regenrohr(.05, t0, this.chimeBus);
+    else if (kind === 'wind') { this.noiseAt(700, .6, .025, .4, .9, t0, this.comp); this.note(this.degFreq(deg, 2), 'sine', .018, .35, .8, t0, this.comp); }
+    else if (kind === 'liebe') this.cello(this.degFreq(deg, 1), this.degFreq(deg + 2, 1), .05, t0, this.chimeBus);
   },
   toggle() { this.on = !this.on; if (!this.ctx && this.on) this.init(); if (this.ctx) this.master.gain.setTargetAtTime(this.on ? CFG.volume : 0, this.ctx.currentTime, .2); this.resume(); },
   resume() { if (this.ctx && (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted')) this.ctx.resume().catch(() => {}); },
@@ -506,14 +536,32 @@ function drawPlanet() {
     }
   }
 }
-function drawTaktlicht() { // das umlaufende Licht der Spieluhr
+function drawTonarm() { // die Nadel liest deine Welt wie eine Schallplatte
   const pos = AU.loopPos(), phi = -Math.PI / 2 + pos * Math.PI * 2;
-  for (let k = 4; k >= 0; k--) {
-    const pk = phi - k * .018, [x, y] = spos(pk, 4);
+  for (let k = 4; k >= 1; k--) { // leise Spur hinter der Nadel
+    const pk = phi - k * .016, [x, y] = spos(pk, 3);
     if (x < -30 || x > W + 30 || y > H + 30) continue;
-    const a = (k === 0 ? .6 : .3 * (1 - k / 5));
-    dot(x, y, k === 0 ? WHITE : mixc(WHITE, PAL.liebe[1], .5), a, k === 0 ? 3 : 2);
+    dot(x, y, mixc(WHITE, RIMC, .5), .22 * (1 - k / 5), 2);
   }
+  if (!visible(phi)) return;
+  const u = UI, [px, py] = spos(phi, 2);
+  const nx = Math.cos(phi), ny = Math.sin(phi);      // nach außen
+  const tx = -Math.sin(phi), ty = Math.cos(phi);     // Laufrichtung
+  let ax = nx - tx * .42, ay = ny - ty * .42;        // der Arm läuft der Nadel nach
+  const L = Math.hypot(ax, ay); ax /= L; ay /= L;
+  const alen = 58 * u, ex = px + ax * alen, ey = py + ay * alen;
+  const gr = new Path2D(); gr.arc(CX, CY, R + 2, phi - .05, phi + .05); // die Rille
+  neon(gr, RIMC, .3, .3, 5);
+  neon(line(px + ax * 8 * u, py + ay * 8 * u, ex, ey), [205, 218, 235], .55, .5, 5); // Tonarm
+  dot(ex, ey, [205, 218, 235], .7, 3.5); // Gegengewicht
+  neon(poly([ // Nadelkopf
+    [px + ax * 8 * u - tx * 3.2 * u, py + ay * 8 * u - ty * 3.2 * u],
+    [px + ax * 2.5 * u, py + ay * 2.5 * u],
+    [px + ax * 8 * u + tx * 3.2 * u, py + ay * 8 * u + ty * 3.2 * u],
+  ], true), [225, 232, 245], .65, .8, 5);
+  const np = clamp(1 - (S.worldT - (S.needleT ?? -9)) / .7, 0, 1); // Puls, wenn ein Ton entsteht
+  dot(px, py, WHITE, .75 + .25 * np, 2.5 + np * 1.5);
+  if (np > 0) neon(circle(px, py, 4 + (1 - np) * 16 * u), PAL.liebe[1], .35 * np, .4, 5);
 }
 function entAlpha(e) {
   const inA = sm(clamp((S.worldT - e.born) / 2, 0, 1));
@@ -842,7 +890,8 @@ function drawLove(e) {
   const [x, y] = spos(phiM, alt);
   const size = clamp(P.size ?? 5, 2.5, 7) * 1.6;
   const pulse = .82 + .18 * Math.sin(S.worldT * clamp(P.pulse ?? .14, .05, .25) * 6.3 * RM + e.ph);
-  ctx.fillStyle = col(e.C[0], .2 * al * pulse); ctx.fillRect(x - 10, y - 10, 20, 20);
+  ctx.fillStyle = col(e.C[0], .07 * al * pulse); ctx.fillRect(x - 12, y - 12, 24, 24);
+  ctx.fillStyle = col(e.C[0], .11 * al * pulse); ctx.fillRect(x - 7, y - 7, 14, 14);
   if (f === 'komet') for (let k = 1; k <= 6; k++) {
     const [pk, ak] = lovePos(e, k * .5), [tx2, ty2] = spos(pk, ak);
     dot(tx2, ty2, e.C[0], .4 * al * (1 - k / 7), 3);
@@ -1053,7 +1102,7 @@ function frame(t) {
   drawSky();
   drawPlanet();
   for (const e of S.ents) if (e.kind !== 'liebe') drawEnt(e);
-  drawTaktlicht();
+  drawTonarm();
   for (const e of S.ents) if (e.kind === 'liebe') drawEnt(e); // Liebe zuletzt: ihre Fäden liegen oben
   ctx.restore();
   drawUI();
@@ -1063,7 +1112,7 @@ requestAnimationFrame(frame);
 
 // Debug-Griff: NF.plant(art, winkelOffset, höhe, variante), NF.gallery(art), NF.warp(s)
 window.NF = {
-  S, VAR,
+  S, VAR, AU,
   rects: () => ({ el: btnRects().map(b => [b.cx, b.cy]), top: topBtns().map(b => [b.cx, b.cy]), orbit: [orbitBtn().cx, orbitBtn().cy] }),
   plant: (k, off = 0, alt = 40, v = -1) => plant(k, -Math.PI / 2 + off - S.om, (k === 'wind' || k === 'liebe') ? alt : 0, v),
   warp(sec) { const st = .033; for (let k = 0; k < sec / st; k++) update(st); },

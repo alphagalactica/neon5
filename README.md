@@ -16,20 +16,22 @@ gehalten — nichts blitzt, nichts drängt. Animationen bleiben unter ~0,3&nbsp;
 Übergänge dauern Sekunden (epilepsiefreundlich, `prefers-reduced-motion` wird
 zusätzlich respektiert).
 
-## Der Planet ist eine Spieluhr
+## Der Planet ist eine Schallplatte
 
-Im Hintergrund erklingt eine harmonische, beruhigende Symphonie — und die Welt selbst
-ist ihre Partitur. Ein Taktlicht umkreist den Planeten; jede Schöpfung ist eine Note:
+Kein Dauerklang, kein Teppich: **Musik entsteht nur, wo du erschaffen hast** —
+dazwischen Stille und Echo. Eine sichtbare **Nadel mit Tonarm** wandert über die
+Erdrundung und liest deine Geschöpfe wie eine Platte; wo sie liest, pulst sie.
 
-- **Wo** du pflanzt (der Winkel), bestimmt ihren Platz im Takt.
+- **Wo** du pflanzt (der Winkel), bestimmt den Platz im Takt.
 - **Links oder rechts** wird zum Stereo-Panorama.
-- **Das Element** bestimmt die Stimme: Erde zupft, Wasser klingt wie Glas,
-  Feuer schlägt einen weichen Puls, Wind atmet, Liebe singt Zweiklänge.
+- **Das Element** bestimmt das Instrument: Erde ist eine **Handpan**, Wasser
+  **Regenrohr** und Glastropfen, Feuer ein **Gong**, der nach dem Anschlag
+  aufblüht, Wind ein **Atem**, Liebe ein **Cello**-Schwellklang im Zweiklang.
 - **Die Erscheinung** (Variante) bestimmt die Tonhöhe.
 
-Alle Töne rasten auf ein 16tel-Raster und stammen aus der Pentatonik über einer
-konsonanten Akkordfolge — die Symphonie gerät nie aus dem Takt und kennt keine
-Dissonanz. Tonart, Tempo und Akkordfolge werden bei jedem Besuch neu ausgelost:
+Alle Klänge rasten auf ein 16tel-Raster und stammen aus der Pentatonik über einer
+still weiterwandernden, konsonanten Akkordfolge — nichts gerät aus dem Takt, nichts
+wird dissonant. Tonart und Tempo werden bei jedem Besuch neu ausgelost:
 **jede Session ist eine einmalige Aufführung deiner Welt.**
 
 ## 120 Erscheinungen
