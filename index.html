@@ -260,12 +260,15 @@ const AU = {
       o.start(t0); o.stop(t0 + (short ? 4 : 12));
     }
   },
-  regenrohr(g, t0, dest) { // Kaskade winziger Glasperlen, die Dichte fällt aus
-    const n = 24;
+  regenrohr(g, t0, dest) { // fallender Perlenregen — auf der Session-Tonleiter, kein Zufallsgezwitscher
+    const n = 15;
     for (let i = 0; i < n; i++) {
-      const ti = t0 + Math.pow(i / n, 1.4) * 1.7 + Math.random() * .03;
-      this.note(1400 + Math.random() * 2800, 'sine', g * (.35 + Math.random() * .65) * (1 - i / n * .55), .002, .045, ti, dest);
+      const ti = t0 + Math.pow(i / n, 1.35) * 2 + Math.random() * .04;
+      const deg = 9 - ((i + ((Math.random() * 2) | 0)) % 10); // fällt zwei Oktaven herab, mit leichtem Flirren
+      const f = this.degFreq(deg, 2 + (deg >= 5 ? 1 : 0));
+      this.note(f, 'sine', g * (.4 + Math.random() * .5) * (1 - i / n * .45), .012, .16 + Math.random() * .08, ti, dest);
     }
+    this.noiseAt(750, .5, .012, .3, .5, t0, dest); // das Wasser im Rohr
   },
   cello(f1, f2, g, t0, dest, dur = 2.4) { // gestrichener Schwell-Zweiklang mit spätem Vibrato
     const c = this.ctx;
@@ -285,7 +288,7 @@ const AU = {
     const deg = (e.v * 7 + (e.seed >>> 8)) % 5;
     const warm = 1 + .3 * S.harmony;
     if (e.kind === 'erde') this.handpan(this.degFreq(deg, e.v % 2), .055 * warm, t0, this.out(pan), true);
-    else if (e.kind === 'wasser') { const f = this.degFreq(deg, 1 + (e.v % 2)); this.note(f * 2, 'sine', .035 * warm, .01, 1.1, t0, this.chimeBus); this.note(f * 4, 'sine', .01, .01, .7, t0, this.chimeBus); }
+    else if (e.kind === 'wasser') { const f = this.degFreq(deg, 2); this.note(f, 'sine', .034 * warm, .02, .9, t0, this.chimeBus); this.note(f * 3, 'sine', .008, .03, .5, t0, this.chimeBus); }
     else if (e.kind === 'feuer') this.gong(this.chordRoot() / 2, .06 * warm, t0, this.out(pan), true);
     else if (e.kind === 'wind') this.noiseAt(420 + e.alt * 3, .7, .018, .5, 1, t0, this.out(pan));
     else if (e.kind === 'liebe') this.cello(this.degFreq(deg, 1), this.degFreq(deg + 2, 1), .035 * warm, t0, this.chimeBus, 1.6);
