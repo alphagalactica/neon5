@@ -155,7 +155,7 @@ const S = {
    das Element zur Stimme, die Variante zur Tonhöhe. */
 const AU = {
   ctx: null, on: CFG.audio, master: null, comp: null, chimeBus: null,
-  timer: null, lastSpawn: -9,
+  timer: null, lastSpawn: -9, welcomed: false,
   key: 110, minor: 1, bpm: 52, prog: [0, 8, 3, 10], pent: [0, 3, 5, 7, 10],
   stepDur: 0, steps: 64, loopDur: 0, loopStart: 0, nextStep: 0, chordI: 0,
   init() {
@@ -193,8 +193,21 @@ const AU = {
   },
   chordRoot() { return this.key * Math.pow(2, this.prog[this.chordI] / 12); },
   degFreq(deg, oct) { const p = this.pent[((deg % 5) + 5) % 5]; return this.key * Math.pow(2, p / 12) * Math.pow(2, oct); },
+  unlock() { // iOS & Co.: im Gesten-Kontext zwingend entsperren — stiller Puffer + resume
+    if (!this.ctx && this.on) this.init();
+    const c = this.ctx; if (!c) return;
+    if (c.state !== 'running') {
+      try { const b = c.createBuffer(1, 1, 22050); const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); } catch (err) { /* egal */ }
+      c.resume().catch(() => {});
+    }
+  },
   tick() {
-    const c = this.ctx; if (!c || c.state !== 'running') return;
+    const c = this.ctx; if (!c) return;
+    if (c.state !== 'running') { this.resume(); return; } // Wachhund: weiter versuchen
+    if (S.started && this.on && !this.welcomed) { // hörbare Bestätigung, sobald der Ton wirklich steht
+      this.welcomed = true;
+      this.handpan(this.key * 2, .07, c.currentTime + .05, this.chimeBus);
+    }
     const now = c.currentTime;
     while (this.loopStart + this.nextStep * this.stepDur < now + .5) {
       const t0 = this.loopStart + this.nextStep * this.stepDur;
@@ -1055,8 +1068,17 @@ function start() {
   if (CFG.audio) AU.init();
   AU.resume();
 }
-for (const ev of ['pointerdown', 'touchstart', 'click'])
+for (const ev of ['pointerdown', 'touchstart', 'touchend', 'click'])
   introEl.addEventListener(ev, e => { e.preventDefault(); start(); }, { passive: false });
+// Ton auf jeder Geste entsperren, bis er wirklich läuft (iOS gibt WebAudio nur so frei)
+const unlockEvts = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'keydown', 'click'];
+const tryUnlock = () => {
+  AU.unlock();
+  if (AU.ctx && AU.ctx.state === 'running') for (const ev of unlockEvts) removeEventListener(ev, tryUnlock, true);
+};
+for (const ev of unlockEvts) addEventListener(ev, tryUnlock, { capture: true, passive: true });
+addEventListener('pageshow', () => { if (S.started) AU.resume(); });
+addEventListener('focus', () => { if (S.started) AU.resume(); });
 addEventListener('keydown', e => {
   start();
   const c = e.code;
