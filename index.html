@@ -170,16 +170,18 @@ const AU = {
                              : [[0, 5, 9, 7], [0, 9, 5, 7], [0, 4, 5, 7]][(Rn() * 3) | 0];
       this.pent = this.minor ? [0, 3, 5, 7, 10] : [0, 2, 4, 7, 9];
       this.stepDur = 60 / this.bpm / 4; this.loopDur = this.stepDur * this.steps;
-      const comp = this.comp = c.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 5;
+      const comp = this.comp = c.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 4; comp.attack.value = .01; comp.release.value = .4;
       this.master = c.createGain(); this.master.gain.value = this.on ? CFG.volume : 0;
       comp.connect(this.master).connect(c.destination);
-      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 400; lp.Q.value = .6;
+      // Der Teppich: reine Sinus-Schichten (Grundton, Quinte, Oktavpaar, weiche Duodezime).
+      // Kein Sägezahn, kein Filter-Wah, keine hörbare Schwebung — nur ein glasiges, stilles Fundament.
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = .5;
       const padG = c.createGain(); padG.gain.value = 0; lp.connect(padG).connect(comp);
-      padG.gain.linearRampToValueAtTime(0.06, c.currentTime + 8);
-      const lfo = c.createOscillator(); lfo.frequency.value = .04;
-      const lfoG = c.createGain(); lfoG.gain.value = 110; lfo.connect(lfoG).connect(lp.frequency); lfo.start();
+      padG.gain.linearRampToValueAtTime(0.055, c.currentTime + 8);
+      const lfo = c.createOscillator(); lfo.frequency.value = .03; // atmet nur in der Lautstärke, sehr leise
+      const lfoG = c.createGain(); lfoG.gain.value = .005; lfo.connect(lfoG).connect(padG.gain); lfo.start();
       const mk = (type, mult, g) => { const o = c.createOscillator(); o.type = type; o.frequency.value = this.key * mult; const og = c.createGain(); og.gain.value = g; o.connect(og).connect(lp); o.start(); this.pad.push({ o, mult }); };
-      mk('sawtooth', 1, .26); mk('sawtooth', 1.004, .26); mk('triangle', 1.5, .13); mk('sine', 2, .09);
+      mk('sine', 1, .3); mk('sine', 1.5, .09); mk('sine', 2, .16); mk('sine', 2.0015, .05); mk('triangle', 3, .03);
       const lo = c.createOscillator(); lo.type = 'sine'; lo.frequency.value = this.key * (this.minor ? 2.4 : 2.5);
       this.loveG = c.createGain(); this.loveG.gain.value = 0; lo.connect(this.loveG).connect(comp); lo.start();
       this.chimeBus = c.createGain(); this.chimeBus.gain.value = .55; this.chimeBus.connect(comp);
@@ -210,7 +212,7 @@ const AU = {
       if (sIn % 16 === 0) { // Akkordwechsel je Takt — der Teppich gleitet mit
         this.chordI = (sIn / 16) | 0;
         const root = this.chordRoot();
-        for (const v of this.pad) v.o.frequency.setTargetAtTime(root * v.mult, t0, 1.6);
+        for (const v of this.pad) v.o.frequency.setTargetAtTime(root * v.mult, t0, .35); // kurzer, sanfter Übergang statt Sirenen-Glissando
       }
       if (this.on && t0 > now - .05) this.playStep(sIn, t0);
       this.nextStep++;
