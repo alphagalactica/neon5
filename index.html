@@ -43,7 +43,7 @@
   #rotate{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:30;display:none;
     align-items:center;justify-content:center;flex-direction:column;gap:28px;touch-action:none;user-select:none;
     font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace}
-  @media (pointer:coarse) and (orientation:portrait){#rotate{display:flex}}
+  @media (pointer:coarse) and (orientation:portrait){body.started #rotate{display:flex}} /* das Intro darf hochkant betrachtet werden */
   #rotate .phone{width:44px;height:76px;border:1px solid #ffb9d6;border-radius:9px;position:relative;
     box-shadow:0 0 14px rgba(255,185,214,.5), inset 0 0 0 1px rgba(255,255,255,.28);
     animation:turn 3.8s ease-in-out infinite}
@@ -52,6 +52,21 @@
   #rotate .rt{font-size:10px;letter-spacing:.34em;color:#9fb2ba}
   @keyframes turn{0%,22%{transform:rotate(0)}50%,72%{transform:rotate(90deg)}100%{transform:rotate(0)}}
   @media (prefers-reduced-motion:reduce){#intro .go{animation:none;opacity:.9}#rotate .phone{animation:none;transform:rotate(90deg)}}
+  /* Vernissage im Querformat: kompaktes Layout für niedrige Bildschirme */
+  @media (max-height:540px){
+    #intro{align-items:flex-start}
+    #intro .box{padding:14px 26px;margin:12px;max-width:94vw}
+    #intro .pre{margin-bottom:6px;font-size:10px}
+    #intro .t1{font-size:clamp(18px,5.5vh,26px)}
+    #intro .t2{margin-top:6px;font-size:10px}
+    #intro .rule{margin:10px auto}
+    #intro .st{font-size:11px;line-height:1.55;max-width:66ch;margin-bottom:8px}
+    #intro .elems{margin:8px 0 2px;gap:8px}
+    #intro .elems span{font-size:9px;padding:3px 7px}
+    #intro .hint{margin-top:8px;font-size:9.5px;line-height:1.5}
+    #intro .go{margin-top:10px;font-size:11px}
+    #intro .lic{margin-top:10px;font-size:9px}
+  }
 </style>
 </head>
 <body>
@@ -72,10 +87,10 @@
   <div class="elems"><span class="e1">ERDE</span><span class="e2">FEUER</span><span class="e3">WASSER</span><span class="e4">WIND</span><span class="e5">LIEBE</span></div>
   <p class="hint">Die fünf leuchtenden Zeichen unten sind deine Kraftquellen — eines wählen
   (oder Tasten 1–5), dann den Planeten berühren · das Orbit-Zeichen links oben (O)
-  wechselt Stille · Gleiten · Flug · Note = Ton (M) · Strahlpunkt = Glow (G) ·
-  × = die Welt loslassen (C) · i = diese Seite</p>
+  wechselt Stille · Gleiten · Flug · der Kreispfeil oben rechts (zweimal berühren)
+  setzt die Welt zurück und führt hierher zurück</p>
   <div class="go">EINTRETEN</div>
-  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.7</div>
+  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.9</div>
 </div></div>
 <script src="variants.js"></script>
 <script>
@@ -1012,13 +1027,7 @@ function btnRects() {
   const x0 = W / 2 - gap * 2;
   return ELEMENTS.map((e, i) => ({ cx: x0 + i * gap, cy: y0, x: x0 + i * gap - 22 * u, y: y0 - 22 * u, w: 44 * u, h: 44 * u, e, i }));
 }
-function topBtns() {
-  const u = UI, sp = 38 * u, y0 = 26 * u;
-  return [['M', AU.on], ['G', CFG.glow], ['i', true], ['×', true]].map(([n, on], i) => {
-    const cx = W - 22 * u - (3 - i) * sp;
-    return { cx, cy: y0, x: cx - 17 * u, y: y0 - 17 * u, w: 34 * u, h: 34 * u, n, on };
-  });
-}
+function resetBtn() { const u = UI; const cx = W - 26 * u, cy = 26 * u; return { cx, cy, x: cx - 19 * u, y: cy - 19 * u, w: 38 * u, h: 38 * u }; }
 function orbitBtn() { const u = UI; return { cx: 34 * u, cy: 26 * u, x: 8 * u, y: 6 * u, w: 54 * u, h: 42 * u }; }
 function drawUI() {
   const u = UI;
@@ -1044,27 +1053,21 @@ function drawUI() {
     neon(glyphPath(b.e.k, 10.5), c, a, seld ? .9 : 0, 6);
     ctx.restore();
   }
-  // Oben rechts: Note (Ton), Strahlpunkt (Glow), i (Vernissage), × (Loslassen)
-  for (const b of topBtns()) {
-    ctx.save(); ctx.translate(b.cx, b.cy); ctx.scale(u, u);
+  // Oben rechts nur noch ein Zeichen: der Kreispfeil — zweimal berühren setzt alles zurück
+  {
+    const rb = resetBtn();
+    const armed = S.resetArm && S.worldT - S.resetArm < 3;
+    const a = armed ? .9 : .38;
+    ctx.save(); ctx.translate(rb.cx, rb.cy); ctx.scale(u, u);
     const cw = [200, 214, 232];
-    if (b.n === 'M') {
-      const a = b.on ? .6 : .3;
-      const p = new Path2D(); p.moveTo(2.5, 3.5); p.lineTo(2.5, -5.5); p.quadraticCurveTo(6.5, -4.5, 6.5, -1.5);
-      neon(p, cw, a, b.on ? .5 : 0, 4);
-      dot(.5, 4, cw, a + .15, 4);
-      if (!b.on) neon(line(-7, 7, 8, -8), WHITE, .4, 0, 4);
-    } else if (b.n === 'G') {
-      const a = b.on ? .6 : .28;
-      dot(0, 0, cw, a + .2, 3.5);
-      if (b.on) for (const an2 of [0, Math.PI / 2, Math.PI, Math.PI * 1.5, Math.PI / 4, Math.PI * .75, Math.PI * 1.25, Math.PI * 1.75])
-        neon(line(Math.cos(an2) * 4, Math.sin(an2) * 4, Math.cos(an2) * 7.5, Math.sin(an2) * 7.5), cw, a * .8, 0, 4);
-    } else if (b.n === 'i') {
-      neon(line(0, -1, 0, 6), cw, .45, .3, 4);
-      dot(0, -5.5, cw, .6, 3);
-    } else {
-      neon(line(-5, -5, 5, 5), cw, .45, .3, 4);
-      neon(line(-5, 5, 5, -5), cw, .45, .3, 4);
+    const p = new Path2D(); p.arc(0, 0, 8, -Math.PI * .38, Math.PI * 1.02);
+    neon(p, armed ? PAL.liebe[0] : cw, a, armed ? .8 : .25, 5);
+    const ha = -Math.PI * .38; // Pfeilspitze am offenen Ende
+    const hx2 = Math.cos(ha) * 8, hy2 = Math.sin(ha) * 8;
+    neon(poly([[hx2 - 4, hy2 - 1.5], [hx2 + 1.5, hy2 - 4.5], [hx2 + 2.5, hy2 + 2]], true), armed ? PAL.liebe[0] : cw, a, armed ? .7 : .2, 4);
+    if (armed) { // scharf: ein ruhiger Puls bittet um Bestätigung
+      const t = ((S.worldT - S.resetArm) % 1.2) / 1.2;
+      neon(circle(0, 0, 10 + t * 9), PAL.liebe[0], .3 * (1 - t), 0, 5);
     }
     ctx.restore();
   }
@@ -1079,8 +1082,10 @@ function drawUI() {
 /* ============ EINGABE ============ */
 const introEl = document.getElementById('intro');
 function start() {
+  if (S.resetGuard && performance.now() - S.resetGuard < 600) return; // Nachklapp des Reset-Tipps schluckt nicht gleich wieder das Intro
   if (S.started) { introEl.classList.add('hide'); return; }
   S.started = true; S.startT = S.worldT;
+  document.body.classList.add('started');
   introEl.classList.add('hide');
   if (CFG.audio) AU.init();
   AU.resume();
@@ -1108,20 +1113,31 @@ addEventListener('keydown', e => {
   else if (c === 'KeyC') letGo();
   else if (c === 'KeyI') introEl.classList.remove('hide');
   else if (c === 'KeyO') { S.orbit = (S.orbit + 1) % ORBITS.length; save(); }
+  else if (c === 'KeyR') { if (S.resetArm && S.worldT - S.resetArm < 3) doReset(); else S.resetArm = S.worldT; }
 });
 function letGo() { for (const e of S.ents) if (!e.dying) e.dying = S.worldT; save(); }
+function doReset() { // zurück zur Vernissage, das Karussell auf Anfang
+  S.resetArm = 0; S.resetGuard = performance.now();
+  S.ents = []; S.labels = []; skyEcho = [];
+  S.om = 0; S.orbit = 0; S.rotV = ORBITS[0].v; S.sel = 0; S.harmony = 0; S.needleT = -9;
+  try { localStorage.removeItem(KEY); localStorage.removeItem('neon5_welt_v1'); } catch (err) { /* egal */ }
+  S.started = false; S.startT = 0; AU.welcomed = false; // der Eintrittston begrüßt beim nächsten Mal erneut
+  document.body.classList.remove('started');
+  introEl.classList.remove('hide');
+}
 addEventListener('visibilitychange', () => { document.hidden ? AU.suspend() : (S.started && AU.resume()); });
 cv.addEventListener('pointerdown', ev => {
   const wasStarted = S.started; start();
   if (!wasStarted) return;
   const x = ev.clientX, y = ev.clientY;
-  const ob = orbitBtn();
-  if (x >= ob.x - 5 && x <= ob.x + ob.w + 5 && y >= ob.y - 5 && y <= ob.y + ob.h + 5) { S.orbit = (S.orbit + 1) % ORBITS.length; save(); return; }
-  for (const b of topBtns()) if (x >= b.x - 5 && x <= b.x + b.w + 5 && y >= b.y - 5 && y <= b.y + b.h + 5) {
-    if (b.n === 'M') AU.toggle(); else if (b.n === 'G') CFG.glow = !CFG.glow;
-    else if (b.n === 'i') introEl.classList.remove('hide'); else letGo();
+  const rb = resetBtn();
+  if (x >= rb.x - 5 && x <= rb.x + rb.w + 5 && y >= rb.y - 5 && y <= rb.y + rb.h + 5) {
+    if (S.resetArm && S.worldT - S.resetArm < 3) doReset(); else S.resetArm = S.worldT; // erst scharf, dann bestätigen
     return;
   }
+  S.resetArm = 0; // jede andere Berührung entschärft
+  const ob = orbitBtn();
+  if (x >= ob.x - 5 && x <= ob.x + ob.w + 5 && y >= ob.y - 5 && y <= ob.y + ob.h + 5) { S.orbit = (S.orbit + 1) % ORBITS.length; save(); return; }
   for (const b of btnRects()) if (x >= b.x && x <= b.x + b.w && y >= b.y - 6 && y <= b.y + b.h + 6) { S.sel = b.i; return; }
   if (y > H - 58 * UI) return; // Leisten-Totzone: zwischen den Zeichen wird nicht gepflanzt
   if (S.worldT - S.lastPlant < .18) return; S.lastPlant = S.worldT;
@@ -1156,7 +1172,7 @@ requestAnimationFrame(frame);
 // Debug-Griff: NF.plant(art, winkelOffset, höhe, variante), NF.gallery(art), NF.warp(s)
 window.NF = {
   S, VAR, AU,
-  rects: () => ({ el: btnRects().map(b => [b.cx, b.cy]), top: topBtns().map(b => [b.cx, b.cy]), orbit: [orbitBtn().cx, orbitBtn().cy] }),
+  rects: () => ({ el: btnRects().map(b => [b.cx, b.cy]), top: [[resetBtn().cx, resetBtn().cy]], orbit: [orbitBtn().cx, orbitBtn().cy] }),
   plant: (k, off = 0, alt = 40, v = -1) => plant(k, -Math.PI / 2 + off - S.om, (k === 'wind' || k === 'liebe') ? alt : 0, v),
   warp(sec) { const st = .033; for (let k = 0; k < sec / st; k++) update(st); },
   gallery(k, page = 0, per = 8) {
