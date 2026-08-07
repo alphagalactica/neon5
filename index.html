@@ -2,7 +2,11 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
 <title>NEON5 — Die fünf Elemente</title>
 <style>
   html,body{margin:0;height:100%;background:#000;overflow:hidden;overscroll-behavior:none}
@@ -35,11 +39,24 @@
   #intro .lic{margin-top:22px;font-size:10px;letter-spacing:.14em;color:#5f6f78}
   #intro .lic a{color:#7f9bb8}
   @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
-  @media (prefers-reduced-motion:reduce){#intro .go{animation:none;opacity:.9}}
+  /* Mobilgeräte spielen im Querformat: im Hochformat bittet ein stilles Zeichen ums Drehen */
+  #rotate{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:30;display:none;
+    align-items:center;justify-content:center;flex-direction:column;gap:28px;touch-action:none;user-select:none;
+    font-family:ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace}
+  @media (pointer:coarse) and (orientation:portrait){#rotate{display:flex}}
+  #rotate .phone{width:44px;height:76px;border:1px solid #ffb9d6;border-radius:9px;position:relative;
+    box-shadow:0 0 14px rgba(255,185,214,.5), inset 0 0 0 1px rgba(255,255,255,.28);
+    animation:turn 3.8s ease-in-out infinite}
+  #rotate .phone::after{content:'';position:absolute;left:50%;bottom:5px;width:12px;height:2px;
+    transform:translateX(-50%);background:#ffb9d6;box-shadow:0 0 6px #ffb9d6}
+  #rotate .rt{font-size:10px;letter-spacing:.34em;color:#9fb2ba}
+  @keyframes turn{0%,22%{transform:rotate(0)}50%,72%{transform:rotate(90deg)}100%{transform:rotate(0)}}
+  @media (prefers-reduced-motion:reduce){#intro .go{animation:none;opacity:.9}#rotate .phone{animation:none;transform:rotate(90deg)}}
 </style>
 </head>
 <body>
 <canvas id="stage"></canvas>
+<div id="rotate"><div class="phone"></div><div class="rt">QUERFORMAT</div></div>
 <div id="intro"><div class="box">
   <div class="pre">EIN DIGITALES KUNSTWERK</div>
   <div class="t1">NEON5</div>
@@ -1067,6 +1084,7 @@ function start() {
   introEl.classList.add('hide');
   if (CFG.audio) AU.init();
   AU.resume();
+  if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); // wo der Browser es erlaubt
 }
 for (const ev of ['pointerdown', 'touchstart', 'touchend', 'click'])
   introEl.addEventListener(ev, e => { e.preventDefault(); start(); }, { passive: false });

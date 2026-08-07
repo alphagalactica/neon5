@@ -1,0 +1,10 @@
+{
+  "name": "NEON5 — Die fünf Elemente",
+  "short_name": "NEON5",
+  "description": "Ein digitales Kunstwerk: ein schwarzer Planet als Schallplatte deiner Welt. Frei für alle (CC0).",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
