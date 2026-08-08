@@ -34,9 +34,9 @@ still weiterwandernden, konsonanten Akkordfolge — nichts gerät aus dem Takt, 
 wird dissonant. Tonart und Tempo werden bei jedem Besuch neu ausgelost:
 **jede Session ist eine einmalige Aufführung deiner Welt.**
 
-## 120 Erscheinungen
+## 240 Erscheinungen
 
-Jedes Element trägt eine Bibliothek von 24 Farb- und Formvarianten mit eigenen Namen —
+Jedes Element trägt eine Bibliothek von 48 Spezies mit eigenen Namen —
 Bäume, Blumen, Farne, Kakteen, Pilze, Kristalle; Kerzen, Lagerfeuer, Vulkane,
 Irrlichter; Quellen, Geysire, Nebel, Eisquellen; Bänder, Wirbel, Federn, Fahnen,
 Schleier; Sterne, Ringe, Herzen, Kometen. Jeder Fingertipp zieht eine neue Erscheinung —
@@ -73,7 +73,7 @@ Ruhe-Regeln, Projektaufbau, PR-Checkliste — in **[CONTRIBUTING.md](CONTRIBUTIN
 | Datei | Inhalt |
 | --- | --- |
 | [`index.html`](index.html) | Engine: Planet, Formen-Renderer, Spieluhr-Sequencer, UI |
-| [`variants.js`](variants.js) | Bibliothek der 120 Erscheinungen — der Ort für Beiträge |
+| [`variants.js`](variants.js) | Bibliothek der 240 Spezies — der Ort für Beiträge |
 | [`neongarten.html`](neongarten.html) | v0.2-Vorstufe des Projekts |
 | [`Dockerfile`](Dockerfile) · [`docker-compose.yml`](docker-compose.yml) | Deployment |
 
