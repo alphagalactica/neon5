@@ -45,6 +45,8 @@ ihr Name leuchtet kurz auf.
 ## Erleben
 
 **[index.html](index.html)** — im Browser öffnen, eintreten, erschaffen.
+Die Vernissage spricht **Deutsch und Französisch** (Umschalter oben auf der
+Startseite); die Namen der Spezies bleiben als Teil des Werks deutsch.
 Auf Mobilgeräten spielt das Werk im **Querformat**; im Hochformat bittet ein
 stilles Zeichen ums Drehen. Vom Home-Bildschirm aus startet es dank Manifest
 als Vollbild-App direkt quer (wo das System es erlaubt).

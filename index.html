@@ -35,10 +35,17 @@
   #intro .e4{color:#d8f0ff;border-color:#d8f0ff;box-shadow:0 0 8px rgba(216,240,255,.4)}
   #intro .e5{color:#ffb9d6;border-color:#ffb9d6;box-shadow:0 0 8px rgba(255,185,214,.4)}
   #intro .hint{margin:14px 0 0;font-size:11px;line-height:1.9;color:#7f8f98}
-  #intro .go{margin-top:20px;font-size:13px;letter-spacing:.26em;color:#fff;animation:blink 3s ease-in-out infinite}
+  #intro .go{display:inline-block;margin-top:20px;padding:12px 32px;font-size:13px;letter-spacing:.26em;color:#fff;
+    border:1px solid #ffb9d6;box-shadow:0 0 16px rgba(255,185,214,.5), inset 0 0 12px rgba(255,185,214,.14);
+    animation:blink 3s ease-in-out infinite;cursor:pointer}
+  #intro .lang{display:flex;gap:9px;justify-content:center;align-items:center;margin:0 0 14px;
+    font-size:9.5px;letter-spacing:.28em;color:#5f6f78}
+  #intro .lang span{cursor:pointer;padding:3px 6px}
+  #intro .lang .lsep{cursor:default;padding:3px 0;color:#3f4b52}
+  #intro .lang .on{color:#9be8ff;border-bottom:1px solid #9be8ff;text-shadow:0 0 9px rgba(155,232,255,.55)}
   #intro .lic{margin-top:22px;font-size:10px;letter-spacing:.14em;color:#5f6f78}
   #intro .lic a{color:#7f9bb8}
-  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+  @keyframes blink{0%,100%{opacity:.55}50%{opacity:1}}
   /* Mobilgeräte spielen im Querformat: im Hochformat bittet ein stilles Zeichen ums Drehen */
   #rotate{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:30;display:none;
     align-items:center;justify-content:center;flex-direction:column;gap:28px;touch-action:none;user-select:none;
@@ -64,7 +71,8 @@
     #intro .elems{margin:8px 0 2px;gap:8px}
     #intro .elems span{font-size:9px;padding:3px 7px}
     #intro .hint{margin-top:8px;font-size:9.5px;line-height:1.5}
-    #intro .go{margin-top:10px;font-size:11px}
+    #intro .go{margin-top:10px;font-size:11px;padding:8px 22px}
+    #intro .lang{margin-bottom:6px;font-size:8.5px}
     #intro .lic{margin-top:10px;font-size:9px}
   }
 </style>
@@ -73,6 +81,7 @@
 <canvas id="stage"></canvas>
 <div id="rotate"><div class="phone"></div><div class="rt">QUERFORMAT</div></div>
 <div id="intro"><div class="box">
+  <div class="lang"><span id="lde" class="on">DEUTSCH</span><span class="lsep">·</span><span id="lfr">FRANÇAIS</span></div>
   <div class="pre">EIN DIGITALES KUNSTWERK</div>
   <div class="t1">NEON5</div>
   <div class="t2">DIE FÜNF ELEMENTE</div>
@@ -89,8 +98,8 @@
   (oder Tasten 1–5), dann den Planeten berühren · das Orbit-Zeichen links oben (O)
   wechselt Stille · Gleiten · Flug · der Kreispfeil oben rechts (zweimal berühren)
   setzt die Welt zurück und führt hierher zurück</p>
-  <div class="go">EINTRETEN</div>
-  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.11</div>
+  <div class="go" id="cta">EINTRETEN</div>
+  <div class="lic"><span id="licFree">FREI FÜR ALLE</span> · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.12</div>
 </div></div>
 <script src="variants.js"></script>
 <script>
@@ -1102,6 +1111,46 @@ function drawUI() {
     txt(l.text, clamp(x, 70, W - 70), y, 9.5 * u, l.c, a, 'center', 1);
   }
 }
+
+/* ============ SPRACHE — die Vernissage spricht Deutsch und Französisch ============
+   Die Namen der Spezies bleiben in beiden Sprachen deutsch: sie sind Teil des Werks. */
+const I18N = {
+  de: {
+    title: 'NEON5 — Die fünf Elemente', pre: 'EIN DIGITALES KUNSTWERK', t2: 'DIE FÜNF ELEMENTE',
+    st: `Ein schwarzer Planet in einem dunklen Universum. Fünf Kräfte unter deiner Fingerspitze. Was du pflanzt, wird zur Schallplatte deiner Welt: Eine Nadel wandert über die Erdrundung und spielt deine Geschöpfe — Handpan, Gong, Regenrohr, Cello, Atem. Kein Dauerton, keine Dissonanz, nichts gerät aus dem Takt: Musik entsteht nur, wo du erschaffen hast. Und doch klingt kein Besuch wie der andere. Je mehr du erschaffst, desto lebendiger wird das Universum über dir.`,
+    hint: `Die fünf leuchtenden Zeichen unten sind deine Kraftquellen — eines wählen (oder Tasten 1–5), dann den Planeten berühren · das Orbit-Zeichen links oben (O) wechselt Stille · Gleiten · Flug · der Kreispfeil oben rechts (zweimal berühren) setzt die Welt zurück und führt hierher zurück`,
+    go: 'EINTRETEN', free: 'FREI FÜR ALLE', rotate: 'QUERFORMAT',
+    els: ['ERDE', 'FEUER', 'WASSER', 'WIND', 'LIEBE'],
+  },
+  fr: {
+    title: 'NEON5 — Les cinq éléments', pre: `UNE ŒUVRE D'ART NUMÉRIQUE`, t2: 'LES CINQ ÉLÉMENTS',
+    st: `Une planète noire dans un univers sombre. Cinq forces au bout de ton doigt. Ce que tu plantes devient le disque de ton monde : une aiguille parcourt la courbure de la terre et joue tes créatures — handpan, gong, bâton de pluie, violoncelle, souffle. Pas de bourdon, pas de dissonance, rien ne perd la mesure : la musique ne naît que là où tu as créé. Et pourtant aucune visite ne résonne comme une autre. Plus tu crées, plus l'univers au-dessus de toi s'anime.`,
+    hint: `Les cinq signes lumineux en bas sont tes sources de pouvoir — choisis-en un (ou touches 1–5), puis touche la planète · le signe d'orbite en haut à gauche (O) alterne Silence · Glisse · Vol · la flèche circulaire en haut à droite (toucher deux fois) remet le monde à zéro et ramène ici`,
+    go: 'ENTRER', free: 'LIBRE POUR TOUS', rotate: 'PAYSAGE',
+    els: ['TERRE', 'FEU', 'EAU', 'VENT', 'AMOUR'],
+  },
+};
+let LANG = 'de';
+try { LANG = localStorage.getItem('neon5_lang') || ((navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'de'); } catch (err) { /* egal */ }
+function setLang(l) {
+  LANG = I18N[l] ? l : 'de'; const T = I18N[LANG];
+  try { localStorage.setItem('neon5_lang', LANG); } catch (err) { /* egal */ }
+  document.documentElement.lang = LANG; document.title = T.title;
+  const q = s => document.querySelector(s);
+  q('#intro .pre').textContent = T.pre; q('#intro .t2').textContent = T.t2;
+  q('#intro .st').textContent = T.st; q('#intro .hint').textContent = T.hint;
+  q('#cta').textContent = T.go; q('#licFree').textContent = T.free;
+  q('#rotate .rt').textContent = T.rotate;
+  document.querySelectorAll('#intro .elems span').forEach((s, i) => { s.textContent = T.els[i]; ELEMENTS[i].n = T.els[i]; });
+  document.getElementById('lde').classList.toggle('on', LANG === 'de');
+  document.getElementById('lfr').classList.toggle('on', LANG === 'fr');
+}
+for (const [id, l] of [['lde', 'de'], ['lfr', 'fr']]) {
+  const el = document.getElementById(id);
+  for (const ev of ['pointerdown', 'touchstart', 'touchend', 'click']) // stopPropagation: die Sprachwahl darf das Werk nicht starten
+    el.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); setLang(l); }, { passive: false });
+}
+setLang(LANG);
 
 /* ============ EINGABE ============ */
 const introEl = document.getElementById('intro');
