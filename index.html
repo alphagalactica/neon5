@@ -90,7 +90,7 @@
   wechselt Stille · Gleiten · Flug · der Kreispfeil oben rechts (zweimal berühren)
   setzt die Welt zurück und führt hierher zurück</p>
   <div class="go">EINTRETEN</div>
-  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.10</div>
+  <div class="lic">FREI FÜR ALLE · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.11</div>
 </div></div>
 <script src="variants.js"></script>
 <script>
@@ -315,19 +315,43 @@ const AU = {
     }
     this.noiseAt(750, .5, .012, .3, .5, t0, dest); // das Wasser im Rohr
   },
-  cello(f1, f2, g, t0, dest, dur = 2.4) { // gestrichener Schwell-Zweiklang mit spätem Vibrato
-    const c = this.ctx;
-    for (const [f, gg] of [[f1, g], [f2, g * .8], [f1 * .5, g * .45]]) {
-      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = Math.min(1800, f * 3.2); lp.Q.value = .8;
-      const gn = c.createGain(); gn.gain.value = 0; lp.connect(gn).connect(dest);
-      gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(gg, t0 + dur * .38);
-      gn.gain.setValueAtTime(gg, t0 + dur * .62); gn.gain.linearRampToValueAtTime(0, t0 + dur);
-      const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp);
-      const vib = c.createOscillator(); vib.frequency.value = 4.3;
-      const vg = c.createGain(); vg.gain.value = 0; vib.connect(vg).connect(o.frequency);
-      vg.gain.setValueAtTime(0, t0); vg.gain.linearRampToValueAtTime(f * .0045, t0 + dur * .5);
-      o.start(t0); vib.start(t0); o.stop(t0 + dur + .1); vib.stop(t0 + dur + .1);
-    }
+  cello(deg, g, t0, dest, notes = 2) { // ein singender Legato-Bogen: Ton um Ton, mit Portamento verbunden
+    const c = this.ctx, sd = Math.max(.18, this.stepDur);
+    const off = this.prog[this.chordI]; // der einen möglichen Halbton-Reibung zur wandernden Harmonie ausweichen
+    const clash = d => { const pc = this.pent[((d % 5) + 5) % 5]; const iv = ((pc - off) % 12 + 12) % 12; return iv === 1 || iv === 11; };
+    if (clash(deg)) deg++;
+    const dir = deg % 2 ? -1 : 1; // manche Erscheinungen singen aufwärts, andere hinab
+    const line = notes >= 3 ? [deg, deg + 2 * dir, deg + 3 * dir] : [deg, deg + 2 * dir];
+    if (clash(line[line.length - 1])) line[line.length - 1] += dir;
+    const nf = d => this.degFreq(((d % 5) + 5) % 5, 1 + Math.floor(d / 5));
+    let prevF = 0;
+    line.forEach((d, i) => {
+      const f = nf(d), last = i === line.length - 1;
+      const tn = t0 + i * 2 * sd, dur = (last ? 4.5 : 3) * sd;
+      const layers = [[f, 1]];
+      if (i === 0 && f > 150) layers.push([f / 2, .4]);   // Korpus unter dem ersten Ton
+      if (last && f > 150) layers.push([f * 2 / 3, .5]);  // die Quinte darunter trägt den Schluss
+      for (const [ff, lg] of layers) {
+        const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = Math.min(1600, ff * 2.6); lp.Q.value = .7;
+        const gn = c.createGain(); gn.gain.value = 0; lp.connect(gn).connect(dest);
+        const gg = g * lg;
+        gn.gain.setValueAtTime(0, tn);
+        gn.gain.linearRampToValueAtTime(gg, tn + dur * .34); // weicher Bogenansatz
+        gn.gain.setValueAtTime(gg, tn + dur * .6);
+        gn.gain.setTargetAtTime(0, tn + dur * .6, dur * .22);
+        for (const [type, tg] of [['triangle', 1], ['sawtooth', .32]]) { // warmer Kern, wenig Strich
+          const o = c.createOscillator(); o.type = type;
+          const og = c.createGain(); og.gain.value = tg; o.connect(og).connect(lp);
+          if (i > 0 && ff === f && prevF > 0) { o.frequency.setValueAtTime(prevF, tn); o.frequency.exponentialRampToValueAtTime(ff, tn + .09); }
+          else o.frequency.value = ff;
+          const vib = c.createOscillator(); vib.frequency.value = 4.4;
+          const vg = c.createGain(); vg.gain.value = 0; vib.connect(vg).connect(o.frequency);
+          vg.gain.setValueAtTime(0, tn + dur * .4); vg.gain.linearRampToValueAtTime(ff * .005, tn + dur * .85);
+          o.start(tn); vib.start(tn); o.stop(tn + dur * 2); vib.stop(tn + dur * 2);
+        }
+      }
+      prevF = f;
+    });
   },
   voice(e, t0, pan) { // die Stimme einer Schöpfung unter der Nadel — kurz, leise, verortet
     const deg = (e.v * 7 + (e.seed >>> 8)) % 5;
@@ -336,7 +360,7 @@ const AU = {
     else if (e.kind === 'wasser') { const f = this.degFreq(deg, 2); this.note(f, 'sine', .034 * warm, .02, .9, t0, this.chimeBus); this.note(f * 3, 'sine', .008, .03, .5, t0, this.chimeBus); }
     else if (e.kind === 'feuer') this.gong(this.chordRoot() / 2, .06 * warm, t0, this.out(pan), true);
     else if (e.kind === 'wind') this.noiseAt(420 + e.alt * 3, .7, .018, .5, 1, t0, this.out(pan));
-    else if (e.kind === 'liebe') this.cello(this.degFreq(deg, 1), this.degFreq(deg + 2, 1), .035 * warm, t0, this.chimeBus, 1.6);
+    else if (e.kind === 'liebe') this.cello(deg, .04 * warm, t0, this.chimeBus, 2);
   },
   spawn(kind, e) { // Erschaffungsklang — aufs nächste 16tel gerastert, damit nichts stolpert
     const c = this.ctx; if (!c || !this.on || c.state !== 'running') return;
@@ -348,7 +372,7 @@ const AU = {
     else if (kind === 'feuer') this.gong(this.chordRoot() * (deg % 2 ? 1 : .5), .1, t0, this.comp);
     else if (kind === 'wasser') this.regenrohr(.05, t0, this.chimeBus);
     else if (kind === 'wind') { this.noiseAt(700, .6, .025, .4, .9, t0, this.comp); this.note(this.degFreq(deg, 2), 'sine', .018, .35, .8, t0, this.comp); }
-    else if (kind === 'liebe') this.cello(this.degFreq(deg, 1), this.degFreq(deg + 2, 1), .05, t0, this.chimeBus);
+    else if (kind === 'liebe') this.cello(deg, .055, t0, this.chimeBus, 3);
   },
   toggle() { this.on = !this.on; if (!this.ctx && this.on) this.init(); if (this.ctx) this.master.gain.setTargetAtTime(this.on ? CFG.volume : 0, this.ctx.currentTime, .2); this.resume(); },
   resume() { if (this.ctx && (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted')) this.ctx.resume().catch(() => {}); },

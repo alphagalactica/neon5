@@ -26,7 +26,7 @@ Erdrundung und liest deine Geschöpfe wie eine Platte; wo sie liest, pulst sie.
 - **Links oder rechts** wird zum Stereo-Panorama.
 - **Das Element** bestimmt das Instrument: Erde ist eine **Handpan**, Wasser
   **Regenrohr** und Glastropfen, Feuer ein **Gong**, der nach dem Anschlag
-  aufblüht, Wind ein **Atem**, Liebe ein **Cello**-Schwellklang im Zweiklang.
+  aufblüht, Wind ein **Atem**, Liebe ein **Cello**, das in kleinen Legato-Bögen singt.
 - **Die Erscheinung** (Variante) bestimmt die Tonhöhe.
 
 Alle Klänge rasten auf ein 16tel-Raster und stammen aus der Pentatonik über einer
