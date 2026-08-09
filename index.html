@@ -99,7 +99,7 @@
   wechselt Stille · Gleiten · Flug · der Kreispfeil oben rechts (zweimal berühren)
   setzt die Welt zurück und führt hierher zurück</p>
   <div class="go" id="cta">EINTRETEN</div>
-  <div class="lic"><span id="licFree">FREI FÜR ALLE</span> · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.12</div>
+  <div class="lic"><span id="licFree">FREI FÜR ALLE</span> · <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.de" target="_blank" rel="noopener">CC0</a> · ALPHAGALACTICA · MMXXVI · V0.13</div>
 </div></div>
 <script src="variants.js"></script>
 <script>
@@ -451,7 +451,7 @@ function plant(kind, a, alt = 0, forceV = -1) {
   const v = forceV >= 0 ? forceV : pickV(kind);
   const e = makeEnt(kind, a, (Math.imul(S.ents.length + 13, 2654435761) ^ S.run ^ ((S.worldT * 997) | 0)) >>> 0, alt, false, v);
   S.ents.push(e); AU.spawn(kind, e); save();
-  S.labels.push({ a, alt: kind === 'wind' || kind === 'liebe' ? alt + 40 : 60, text: ELEMENTS.find(x => x.k === kind).n + ' · ' + e.V.n.toUpperCase(), t0: S.worldT, c: e.C[0] });
+  S.labels.push({ a, alt: kind === 'wind' || kind === 'liebe' ? alt + 40 : 60, text: ELEMENTS.find(x => x.k === kind).n + ' · ' + vname(e.V), t0: S.worldT, c: e.C[0] });
   if (S.labels.length > 4) S.labels.shift();
   return e;
 }
@@ -1132,6 +1132,7 @@ const I18N = {
 };
 let LANG = 'de';
 try { LANG = localStorage.getItem('neon5_lang') || ((navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'de'); } catch (err) { /* egal */ }
+function vname(V) { return ((LANG === 'fr' && V.nf) ? V.nf : V.n).toUpperCase(); } // Speziesname in der gewählten Sprache
 function setLang(l) {
   LANG = I18N[l] ? l : 'de'; const T = I18N[LANG];
   try { localStorage.setItem('neon5_lang', LANG); } catch (err) { /* egal */ }

@@ -6,6 +6,11 @@ Ein digitales Kunstwerk. Frei für alle.
 > five elemental forces at your fingertip, and a music-box symphony your world
 > composes itself. No build, no assets, one HTML file. Contributions welcome,
 > see [CONTRIBUTING.md](CONTRIBUTING.md). Everything is CC0.*
+>
+> *Français : une œuvre d'art générative et apaisante — une planète noire dans
+> un univers sombre, cinq forces élémentaires au bout du doigt, et une symphonie
+> que ton monde compose lui-même. L'œuvre est entièrement bilingue (DE · FR).
+> Sans build, sans assets, un seul fichier HTML. Tout est CC0.*
 
 Ein schwarzer Planet in einem dunklen Universum — und ein Finger, der Welten erschafft:
 **Erde, Feuer, Wasser, Wind** und **Liebe**, das fünfte Element, das alles verbindet.
@@ -45,8 +50,9 @@ ihr Name leuchtet kurz auf.
 ## Erleben
 
 **[index.html](index.html)** — im Browser öffnen, eintreten, erschaffen.
-Die Vernissage spricht **Deutsch und Französisch** (Umschalter oben auf der
-Startseite); die Namen der Spezies bleiben als Teil des Werks deutsch.
+Das Werk spricht **Deutsch und Französisch** (Umschalter oben auf der
+Startseite) — vollständig: Auch alle 240 Spezies tragen französische Namen
+(`nf`-Feld in [`variants.js`](variants.js)), von BOULEAU DES BRUMES bis BILLET DOUX.
 Auf Mobilgeräten spielt das Werk im **Querformat**; im Hochformat bittet ein
 stilles Zeichen ums Drehen. Vom Home-Bildschirm aus startet es dank Manifest
 als Vollbild-App direkt quer (wo das System es erlaubt).
